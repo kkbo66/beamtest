@@ -1,4 +1,5 @@
 #include "TH1F.h"
+#include "TFile.h"
 #include "TCanvas.h"
 #include <fstream>
 #include <iostream>
@@ -19,7 +20,7 @@ int main(int argc, char** argv) {
     unsigned int *time1=new unsigned int;
     unsigned int *time2=new unsigned int;
     int timeDiff;
-    std::vector<long> timeDiffs;
+    std::vector<double> timeDiffs;
     int nevents=0;
     int n=0;
     while(!infile.eof()&& infile.good())
@@ -33,7 +34,9 @@ int main(int argc, char** argv) {
       timeDiff=static_cast<long>(*time1)-(*time2);
       if(*trigger == 0x33){
         nevents++;
-        timeDiffs.push_back(timeDiff);
+        double timediff=static_cast<double>(timeDiff)/40.0; // Convert to us
+        if(timediff<100)
+        timeDiffs.push_back(timediff);
         cout << "Event " << n << ": Time1 = " << *time1 << ", Time2 = " << *time2 << ", Time Difference = " << timeDiff << endl;
       }
       n++;
@@ -48,7 +51,9 @@ int main(int argc, char** argv) {
     }
     TCanvas *c1=new TCanvas("c1","Time Difference Histogram",800,600);
     timeDiffHist->Draw();
-    c1->SaveAs("time_difference_histogram.pdf");
+    TFile *outfile=new TFile("timeDiffHist.root","RECREATE");
+    timeDiffHist->Write();
+    outfile->Close();
     infile.close();
     cout << "Total events processed: " << n << endl;
     cout << "Total trigger events (0x33): " << nevents << endl;

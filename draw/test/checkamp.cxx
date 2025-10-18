@@ -139,12 +139,12 @@ void checkamp(TString rootname){
     for(int j=0; j<256; j++){
       double lsum = 0;
       double hsum = 0;
-      for(int k=5; k<25; k++){
+      for(int k=0; k<25; k++){
         lsum += hit[k]->LAmplitude[j];
         hsum += hit[k]->HAmplitude[j];
       }
-      lsum /= 20;
-      hsum /= 20;
+      //lsum /= 20;
+      //hsum /= 20;
       lavg.push_back(lsum);
       havg.push_back(hsum);
     }
@@ -162,19 +162,21 @@ void checkamp(TString rootname){
         hmaxi = j;
       }
     }
-    int lstart, hstart;
-    if(lmaxi-32<0) lstart = 0;
-    else lstart = lmaxi-32;
-    if(hmaxi-32<0) hstart = 0;
-    else hstart = hmaxi-32;
-    double lped = 0;
-    double hped = 0;
-    for(int j=lstart; j<lstart+16; j++) lped += lavg[j];
-    for(int j=hstart; j<hstart+16; j++) hped += havg[j];
-    lped /= 16;
-    hped /= 16;
-    vLAmplitude.push_back(lmax - lped);
-    vHAmplitude.push_back(hmax - hped);
+    //int lstart, hstart;
+    //if(lmaxi-32<0) lstart = 0;
+    //else lstart = lmaxi-32;
+    //if(hmaxi-32<0) hstart = 0;
+    //else hstart = hmaxi-32;
+    //double lped = 0;
+    //double hped = 0;
+    //for(int j=lstart; j<lstart+16; j++) lped += lavg[j];
+    //for(int j=hstart; j<hstart+16; j++) hped += havg[j];
+    //lped /= 16;
+    //hped /= 16;
+    //vLAmplitude.push_back(lmax - lped);
+    //vHAmplitude.push_back(hmax - hped);
+    vLAmplitude.push_back(lmax);
+    vHAmplitude.push_back(hmax);
   } 
 
   double lmax = -1;  
@@ -184,7 +186,7 @@ void checkamp(TString rootname){
     if(vHAmplitude[i]>hmax) hmax = vHAmplitude[i];
   }
 
-  double cut = 200;
+  double cut = 7540*8;
   double lcount = 0;
   double hcount = 0;
 
