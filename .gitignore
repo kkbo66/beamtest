@@ -1,0 +1,69 @@
+# Prerequisites
+*.d
+install
+build*
+.*.swp
+.*.swo
+*~
+*.bak
+.svn
+cmt
+.vscode
+*.root
+*.dat
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# User Rules
+*.pyc
+*.root
+*log*
+*tmp*
+
+**/build/CMakeCache.txt
+**/build/CMakeFiles/
+**/build/Makefile
+**/build/bin/
+**/build/cmake_install.cmake
+**/build/install_manifest.txt
+**/build/lib/
+
+/**/.svn/
+
+/bin/
+/examples/
+/include/
+/lib/
+/macro/
+/parameter/
+/python/
+/share/
+.cache/

@@ -1,0 +1,2 @@
+../../ECALBeamTest/rawdata/savedata_20240705.dat
+../../ECALBeamTest/rawdata/savedata_20240706.dat

@@ -1,0 +1,20 @@
+{
+    "subsys": [
+        {
+            "subsys": "DAQ",
+            "version": "1.1",
+            "info": "ECAL reduce"
+        },
+        {
+            "subsys": "TRIG",
+            "version": "1.0",
+            "info": ""
+        },
+        {
+            "subsys": "ECAL",
+            "version": "4.0",
+            "info": "cali config fast"
+        }
+    ],
+    "work_mode": "default"
+}
