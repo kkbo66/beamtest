@@ -556,14 +556,34 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
                         }
                         // crystalID
                         M = 28 - *BoardID;
-                        if (i < 2)
+                        switch (i)
                         {
-                            C = 34 - i;
+                        case 3:
+                            C = 32;
+                            break;
+                        case 0:
+                            C = 33;
+                            break;
+                        case 1:
+                            C = 34;
+                            break;
+                        case 4:
+                            C = 35;
+                            break;
+                        case 5:
+                            C = 36;
+                            break;
+                        default:
+                            break;
                         }
-                        else
-                        {
-                            C = 40 - i;
-                        }
+                        //if (i < 2)
+                        //{
+                        //    C = 34 - i;
+                        //}
+                        //else
+                        //{
+                        //    C = 40 - i;
+                        //}
                         CrystalID = 3 * 100000 + M * 1000 + C;
 
                         if (i < 2)

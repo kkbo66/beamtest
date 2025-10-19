@@ -10,7 +10,7 @@
 #define _Nnoise 25
 // set time window begin&end
 #define _timewinb 40
-#define _timewine 80
+#define _timewine 120
 
 class DataModel2025
 {

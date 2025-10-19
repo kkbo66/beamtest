@@ -30,13 +30,13 @@ fi
 ROOTFILE="/home/kkbo/beamtest/root/$ROOTNAME"
 
 #Draw variables (example: nosie, pedestal, etc.)
-#/home/kkbo/beamtest/draw/drawval/build/drawval $ROOTFILE 
+/home/kkbo/beamtest/draw/drawval/build/drawval $ROOTFILE 
 
 #Draw sum waveform
 #/home/kkbo/beamtest/draw/drawval/build/drawsumwave $ROOTFILE 
 
 #Draw 5x5 sum waveform (max 5000 events)
-#/home/kkbo/beamtest/draw/drawval/build/draw5x5sumwave $ROOTFILE 
+/home/kkbo/beamtest/draw/drawval/build/draw5x5sumwave $ROOTFILE 
 
 #Draw single channel waveform (input: x y event; default root: /home/kkbo/beamtest/root/re.root)
 #/home/kkbo/beamtest/draw/drawwave/build/drawwave 3 3 100 
@@ -48,5 +48,5 @@ ROOTFILE="/home/kkbo/beamtest/root/$ROOTNAME"
 #/home/kkbo/beamtest/draw/drawval/build/drawHLratio $ROOTFILE
 
 #Draw MiP peak histogram (or more with cutvalue default cut 1000)
-#/home/kkbo/beamtest/draw/elecal/build/drawPeak $ROOTFILE
+/home/kkbo/beamtest/draw/elecal/build/drawPeak $ROOTFILE
 #/home/kkbo/beamtest/draw/elecal/build/drawPeak $ROOTFILE 1500
