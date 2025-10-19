@@ -58,10 +58,24 @@ void getnosped(vector<TString> rootfiles){
           vHNoise.push_back(HNoise[k]); 
         }
       }
-      double orgin_meanL = calculateMean(vLNoise);
-      double orgin_stddevL = calculateStdDev(vLNoise, orgin_meanL);
-      double orgin_meanH = calculateMean(vHNoise);
-      double orgin_stddevH = calculateStdDev(vHNoise, orgin_meanH);
+      sort(vLNoise.begin(), vLNoise.end());
+      sort(vHNoise.begin(), vHNoise.end());
+      vector<Double_t> vLNoise_sub;
+      vector<Double_t> vHNoise_sub;
+      vLNoise_sub.clear();
+      vHNoise_sub.clear();
+      Int_t nL = vLNoise.size();
+      Int_t nH = vHNoise.size();
+      for(Int_t m=nL/10; m<9*nL/10; m++){
+        vLNoise_sub.push_back(vLNoise[m]);
+      }
+      for(Int_t m=nH/10; m<9*nH/10; m++){
+        vHNoise_sub.push_back(vHNoise[m]);
+      }
+      double orgin_meanL = calculateMean(vLNoise_sub);
+      double orgin_stddevL = calculateStdDev(vLNoise_sub, orgin_meanL);
+      double orgin_meanH = calculateMean(vHNoise_sub);
+      double orgin_stddevH = calculateStdDev(vHNoise_sub, orgin_meanH);
       vector<Double_t> vLNoise_new;
       vector<Double_t> vHNoise_new;
       vLNoise_new.clear();

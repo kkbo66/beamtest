@@ -10,7 +10,7 @@ build*
 cmt
 .vscode
 *.root
-*.dat
+data*.dat
 
 # Compiled Object files
 *.slo

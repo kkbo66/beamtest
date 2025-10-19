@@ -1,0 +1,7 @@
+#      EThresholdSeed           EThresholdCluster  
+           6                      10          
+#      LogPosoffset             PositionMode1        PositionMode2
+            4.2                       log               5x5
+#      LateralProfile            MoliereRadius
+           -2.66                       3.8
+

@@ -19,3 +19,9 @@ target_link_libraries(getmip ${ROOT_LIBRARIES})
 
 add_executable(getnosped "getnosped.cxx")
 target_link_libraries(getnosped ${ROOT_LIBRARIES})
+
+add_executable(gethmax "gethmax.cxx")
+target_link_libraries(gethmax ${ROOT_LIBRARIES})
+
+add_executable(drawhlratio "drawhlratio.cxx")
+target_link_libraries(drawhlratio ${ROOT_LIBRARIES})
