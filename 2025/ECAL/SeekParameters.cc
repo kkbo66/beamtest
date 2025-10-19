@@ -159,12 +159,12 @@ void seek_parameters(vector<TString> rootfiles)
     {
         for (int j = 0; j < 11; j++)
         {
-            outfile << setw(10) << LGpars[i][j] << '\t';
+            outfile << left << setw(15) << LGpars[i][j] << '\t';
         }
         outfile << '\n';
         for (int j = 0; j < 11; j++)
         {
-            outfile << setw(10) << HGpars[i][j] << '\t';
+            outfile << left << setw(15) << HGpars[i][j] << '\t';
         }
         outfile << '\n';
     }
