@@ -27,6 +27,7 @@ fi
 #Decode data
 /home/kkbo/beamtest/2025/ECAL/build/ECALdig2root2025 $DATAFILE $ROOTNAME
 
+mv $ROOTNAME /home/kkbo/beamtest/root/
 ROOTFILE="/home/kkbo/beamtest/root/$ROOTNAME"
 
 #Draw variables (example: nosie, pedestal, etc.)

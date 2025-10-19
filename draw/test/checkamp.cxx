@@ -129,6 +129,11 @@ void checkamp(TString rootname){
   vector<Double_t> vHAmplitude; 
   vLAmplitude.clear();
   vHAmplitude.clear();
+  vector<int> vLFirstIndex; 
+  vector<int> vHFirstIndex;
+  vLFirstIndex.clear();
+  vHFirstIndex.clear();
+  double cut = 7540*8;
 
   for(Int_t i=0; i<nentries; i++){
     t1->GetEntry(i);
@@ -162,6 +167,25 @@ void checkamp(TString rootname){
         hmaxi = j;
       }
     }
+    int lstart, hstart;
+    int firstindexl = -1;
+    int firstindexh = -1;
+    if(lmaxi-16<0) lstart = 0;
+    else lstart = lmaxi-16;
+    if(hmaxi-16<0) hstart = 0;
+    else hstart = hmaxi-16;
+    for(int j=lstart; j<lmaxi; j++){  
+      if(lavg[j]>cut) {
+        firstindexl = j;
+        break;
+      }
+    }
+    for(int j=hstart; j<hmaxi; j++){  
+      if(havg[j]>cut) {
+        firstindexh = j;
+        break;
+      }
+    }
     //int lstart, hstart;
     //if(lmaxi-32<0) lstart = 0;
     //else lstart = lmaxi-32;
@@ -177,6 +201,8 @@ void checkamp(TString rootname){
     //vHAmplitude.push_back(hmax - hped);
     vLAmplitude.push_back(lmax);
     vHAmplitude.push_back(hmax);
+    vLFirstIndex.push_back(firstindexl);
+    vHFirstIndex.push_back(firstindexh);
   } 
 
   double lmax = -1;  
@@ -186,7 +212,6 @@ void checkamp(TString rootname){
     if(vHAmplitude[i]>hmax) hmax = vHAmplitude[i];
   }
 
-  double cut = 7540*8;
   double lcount = 0;
   double hcount = 0;
 
@@ -197,6 +222,7 @@ void checkamp(TString rootname){
     hHAmplitude->Fill(vHAmplitude[i]);  
     if(vLAmplitude[i]>cut) lcount++;
     if(vHAmplitude[i]>cut) hcount++;
+    cout<<"Event "<<i<<": L Amplitude = "<<vLAmplitude[i]<<", First Index = "<<vLFirstIndex[i]<<"; H Amplitude = "<<vHAmplitude[i]<<", First Index = "<<vHFirstIndex[i]<<endl;
   }
 
   TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
