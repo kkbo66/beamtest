@@ -576,14 +576,6 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
                         default:
                             break;
                         }
-                        //if (i < 2)
-                        //{
-                        //    C = 34 - i;
-                        //}
-                        //else
-                        //{
-                        //    C = 40 - i;
-                        //}
                         CrystalID = 3 * 100000 + M * 1000 + C;
 
                         if (i < 2)

@@ -34,6 +34,9 @@ target_link_libraries(ECALDigi ${ROOT_LIBRARIES})
 add_executable(ECALTrigger "ECALTrigger.cc" ${sources} ${headers})
 target_link_libraries(ECALTrigger ${ROOT_LIBRARIES})
 
+add_executable(SeekParameters "SeekParameters.cc" ${sources} ${headers})
+target_link_libraries(SeekParameters ${ROOT_LIBRARIES})
+
 #add_executable(ReadRootFile "ReadRootFile.cc" ${sources} ${headers})
 #target_link_libraries(ReadRootFile ${ROOT_LIBRARIES})
 
