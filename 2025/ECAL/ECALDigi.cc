@@ -74,18 +74,7 @@ int main(int argc, char const *argv[])
   string Name[25];
   for (int i = 0; i < 25; i++)
   {
-    int no;
-    if (i % 5 == 0)
-      no = 3;
-    if (i % 5 == 1)
-      no = 4;
-    if (i % 5 == 2)
-      no = 5;
-    if (i % 5 == 3)
-      no = 1;
-    if (i % 5 == 4)
-      no = 2;
-    Name[i] = to_string(i / 5 + 1) + "_" + to_string(no);
+    Name[i] = to_string(i / 5 + 1) + "_" + to_string(i % 5 + 1);
   }
   for (int i = 0; i < 25; i++)
     Hit[i] = new decode_data_col();
@@ -218,9 +207,11 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < 11; j++)
           f1->SetParameter(j, Para.HGWfPara(k, j));
         f1->SetParameter(1, 0);
-        OnePulseFit(cc, hgtimingvec, &time, &amp, &pedestal, &chi2, f1);
-        TimeHG.push_back((HGMaxID) * 12.5 - dd * 12.5 + time);
-        AmpHG_Fit.push_back(amp * f1->GetMaximum());
+        //OnePulseFit(cc, hgtimingvec, &time, &amp, &pedestal, &chi2, f1);
+        //TimeHG.push_back((HGMaxID) * 12.5 - dd * 12.5 + time);
+        //AmpHG_Fit.push_back(amp * f1->GetMaximum());
+        TimeHG.push_back(HGMaxID * 12.5);
+        AmpHG_Fit.push_back(Hit[k]->HighGainPeak - Para.HGPedestal(k));
       }
       else
       {
@@ -237,9 +228,11 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < 11; j++)
           f1->SetParameter(j, Para.LGWfPara(k, j));
         f1->SetParameter(1, 0);
-        OnePulseFit(cc, lgtimingvec, &time, &amp, &pedestal, &chi2, f1);
-        TimeLG.push_back((LGMaxID) * 12.5 - dd * 12.5 + time);
-        AmpLG_Fit.push_back(amp * f1->GetMaximum());
+        //OnePulseFit(cc, lgtimingvec, &time, &amp, &pedestal, &chi2, f1);
+        //TimeLG.push_back((LGMaxID) * 12.5 - dd * 12.5 + time);
+        //AmpLG_Fit.push_back(amp * f1->GetMaximum());
+        TimeLG.push_back(LGMaxID * 12.5);
+        AmpLG_Fit.push_back(Hit[k]->LowGainPeak - Para.LGPedestal(k));
       }
       else
       {

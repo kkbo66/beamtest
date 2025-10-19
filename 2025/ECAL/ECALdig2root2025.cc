@@ -81,7 +81,7 @@ int main(int argc, char const *argv[])
     if (argc == 3)
     {
         if (isRootFile(argv[2]))
-            rootfiles.push_back("/home/kkbo/beamtest/root/" + string(argv[2]));
+            rootfiles.push_back(string(argv[2]));
     }
     else
     {
@@ -89,15 +89,13 @@ int main(int argc, char const *argv[])
         {
             for (size_t i = 0; i < datafiles.size(); i++)
             {
-                rootfiles.push_back("/home/kkbo/beamtest/root/" + nameChanger(datafiles.at(i)));
+                rootfiles.push_back(nameChanger(datafiles.at(i)));
                 cout << "Auto save file as: " << rootfiles.at(i) << endl;
             }
         }
         else
         {
-            //rootfiles.push_back("/home/kkbo/beamtest/root/"+ nameChanger(argv[1]));
-            rootfiles.push_back("/home/kkbo/beamtest/root/re.root");
-            //rootfiles.push_back("re.root");
+            rootfiles.push_back("re.root");
             cout << "Auto save file as re.root..." << endl;
         }
     }
