@@ -129,7 +129,7 @@ void fitmip(){
   TFile *fout = new TFile("/home/kkbo/beamtest/draw/figureroot/MIP_Fit_Results.root", "RECREATE");
   fout->cd();
   c1->Write();
-  //c2->Write();
+  c2->Write();
   fout->Close();
 }
 

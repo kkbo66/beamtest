@@ -134,6 +134,7 @@ void drawfitshower(string rootfile, double energy){
   TChain *t = new TChain("rec_data");
   for(unsigned int i=0;i<rootlist.size();i++){
     t->Add(rootlist[i].c_str());
+    cout<<"Add root file: "<<rootlist[i]<<endl;
   }
 
   vector<int> *SeedID = 0;
@@ -183,19 +184,19 @@ void drawfitshower(string rootfile, double energy){
   TFile *f = new TFile("/home/kkbo/beamtest/draw/figureroot/ecal.root","update");
   if(f->IsOpen()){
     TDirectory *exist = (TDirectory*)f->Get("Energy");
-    if(exist) f->rmdir("Energy");
-    TDirectory *dir = f->mkdir("Energy");
-    dir->cd();
+    if(!exist) exist = f->mkdir("Energy"); 
+    exist->cd();
+    TCanvas *c_exist = (TCanvas*)exist->Get(canvas_name);
+    if(c_exist) c_exist->Delete();
     c->Write();
     f->cd();
     f->Close();
   }
   else{
-    f = new TFile("./ecal.root","recreate");
+    f = new TFile("/home/kkbo/beamtest/draw/figureroot/ecal.root","recreate");
     TDirectory *exist = (TDirectory*)f->Get("Energy");
-    if(exist) f->rmdir("Energy");
-    TDirectory *dir = f->mkdir("Energy");
-    dir->cd();
+    if(!exist) exist = f->mkdir("Energy");
+    exist->cd();
     c->Write();
     f->cd();
     f->Close();

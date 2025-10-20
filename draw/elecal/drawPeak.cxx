@@ -88,11 +88,11 @@ void drawPeak(TString rootname, double cut){
   TH1F *hLowGainMip[5][5];
   TH1F *hHighGainMip[5][5];
 
-  TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
+  TCanvas *c1 = new TCanvas("c1", "LowGain MIP Spectrum", 1200, 800);
   c1->Divide(5, 5);
   for(Int_t i=0; i<5; i++){
     for(Int_t j=0; j<5; j++){
-      c1->cd(i*5+j+1);
+      c1->cd(21+i-5*j);
       hLowGainMip[i][j] = new TH1F(Form("hLowGainMip_%d_%d", i+1, j+1), Form("LowGain MIP Spectrum of Ch%d_%d;LowGain Amplitude [ADC];Entries", i+1, j+1), 100, 0, 16000);
       for(size_t k=0; k<vLowGainPedestal[i*5+j].size(); k++){
         Double_t LPed = vLowGainPedestal[i*5+j][k];
@@ -104,11 +104,11 @@ void drawPeak(TString rootname, double cut){
       hLowGainMip[i][j]->Draw();
     }
   }
-  TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
+  TCanvas *c2 = new TCanvas("c2", "HighGain MIP Spectrum", 800, 600);
   c2->Divide(5, 5);
   for(Int_t i=0; i<5; i++){
     for(Int_t j=0; j<5; j++){
-      c2->cd(i*5+j+1);
+      c2->cd(21+i-5*j);
       hHighGainMip[i][j] = new TH1F(Form("hHighGainMip_%d_%d", i+1, j+1), Form("HighGain MIP Spectrum of Ch%d_%d;HighGain Amplitude [ADC];Entries", i+1, j+1), 100, 0, 16000);
       for(size_t k=0; k<vHighGainPedestal[i*5+j].size(); k++){
         Double_t LPed = vLowGainPedestal[i*5+j][k];

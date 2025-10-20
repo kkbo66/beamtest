@@ -99,7 +99,7 @@ void draw5x5(int num = 100000){
   TTree *t = (TTree*)f->Get("decode_data");
 
   const int n = 256;
-  Double_t Time[n];
+  Float_t Time[n];
   t->SetBranchAddress("Time", Time);
   vector<DataModel2025*> hit(25);
   for(int i=0; i<5; i++){
@@ -110,7 +110,7 @@ void draw5x5(int num = 100000){
   }
   TCanvas *c[num];
   TCanvas *c2[num];
-  for(Int_t i=0; i<t->GetEntries(); i++){
+  for(Int_t i=700; i<t->GetEntries(); i++){
     if(i>=num) break;
     t->GetEntry(i);
     c[i] = new TCanvas(Form("c_%d", i), Form("c_%d", i), 800, 600); 

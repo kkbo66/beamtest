@@ -32,12 +32,14 @@ int main(int argc, char** argv) {
       infile.read((char*)time2,sizeof(unsigned int));
       infile.seekg(4,infile.cur);
       timeDiff=static_cast<long>(*time1)-(*time2);
-      if(*trigger == 0x33){
+      //if(*trigger == 0x33){
+      if(true){
         nevents++;
         double timediff=static_cast<double>(timeDiff)/40.0; // Convert to us
-        if(timediff<100)
+        //if(timediff<1)
         timeDiffs.push_back(timediff);
-        cout << "Event " << n << ": Time1 = " << *time1 << ", Time2 = " << *time2 << ", Time Difference = " << timeDiff << endl;
+        //cout << "Event " << n << ": Time1 = " << *time1 << ", Time2 = " << *time2 << ", Time Difference = " << timeDiff << endl;
+        cout << *time2 << endl;
       }
       n++;
     }

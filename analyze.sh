@@ -27,6 +27,7 @@ fi
 
 #Decode data
 /home/kkbo/beamtest/2025/ECAL/build/ECALdig2root2025 $DATAFILE $ROOTNAME
+rm $DATAFILE
 
 ROOTFILE="/home/kkbo/beamtest/root/$ROOTNAME"
 
