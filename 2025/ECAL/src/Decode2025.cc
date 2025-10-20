@@ -3,6 +3,16 @@
 #include <iostream>
 #include <fstream>
 
+int hex2float(unsigned short tmp)
+{
+    unsigned short Tmp = tmp;
+    unsigned short tmpbit = 0;
+    tmpbit = Tmp >> 14;
+    Tmp = Tmp - tmpbit * 16384;
+    Tmp = Tmp * 4;
+    return Tmp;
+}
+
 void Decode2025::throw_error(std::string info)
 {
     std::cerr << info << std::endl;
@@ -59,10 +69,23 @@ bool Decode2025::clear(float (&mLamp)[6][_Npoints], float (&mHamp)[6][_Npoints],
 // TO DO!: board states set as 0
 bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], float &voltage, float &current)
 {
-    voltage = 0;
-    current = 0;
-    for (int i = 0; i < 10; i++)
-        temperature[i] = 0;
+    // move pointer to state information
+    indata.seekg(24, indata.cur);
+    float state;
+    unsigned int *tmp = new unsigned int();
+    for (int i = 0; i < 12; i++)
+    {
+        indata.read((char *)tmp, sizeof(unsigned short));
+        state = hex2float(*tmp);
+        if (i < 10)
+            temperature[i] = ((state / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
+        else if (i == 10)
+            current = (state / 65536 * 1.15) / 2 * 50;
+        else
+            voltage = (state / 65536 * 1.15) / 2 * 800;
+    }
+    // move pointer to the head of block (pure data part)
+    indata.seekg(-48, indata.cur);
     return true;
 }
 
@@ -74,7 +97,7 @@ bool Decode2025::ReadData(std::ifstream &indata, float (&mLamp)[6][_Npoints], fl
     int channel, point;
     bool HLG;
     // skip block header
-    indata.seekg(24, indata.cur);
+    indata.seekg(48, indata.cur);
     // loop over 3 clusters
     for (int i = 0; i < 3; i++)
     {
