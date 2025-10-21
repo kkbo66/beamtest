@@ -5,49 +5,25 @@ para_num(){
     exit 1
   fi
 }
-
+# 输入参数为DAQ服务器中的数据文件夹路径
 para_num $@
 DATAFILEPATH=$1
-ROOTNAME=$2
 
+# Copy data file to local build directory
+dirname=`basename $DATAFILEPATH`
+mkdir /home/wangjunhao/beamtest/2025/ECAL/build/data/$dirname
+pushd /home/wangjunhao/beamtest/2025/ECAL/build/data/$dirname
+scp lunon@192.168.7.150:$DATAFILEPATH/data*ECAL*.dat .
+ls -tr data*ECAL*.dat >filelist.txt
 
-if [ -z "$ROOTNAME" ]; then
-  ROOTNAME="re.root"
-fi
+# Decode data
+/home/wangjunhao/beamtest/2025/ECAL/build/ECALdig2root2025 /home/wangjunhao/beamtest/2025/ECAL/build/data/$dirname/filelist.txt
+hadd total.root data*ECAL*.root 
 
-#Copy data file to local build directory
-scp lunon@192.168.7.150:$DATAFILEPATH /home/wangjunhao/beamtest/2025/ECAL/build/data
-DATAFILENAME=$(basename $DATAFILEPATH)
-DATAFILE="/home/wangjunhao/beamtest/2025/ECAL/build/data$DATAFILENAME"
+# Draw graphs
+/home/wangjunhao/beamtest/draw/drawval/build/drawval total.root
 
-if test ! -f $DATAFILE; then
-  echo "$DATAFILE does not exist!"
-  exit 1
-fi
+# remove dat files
+rm data*ECAL*
 
-#Decode data
-/home/wangjunhao/beamtest/2025/ECAL/build/ECALdig2root2025 $DATAFILE $ROOTNAME
-
-ROOTFILE="/home/wangjunhao/beamtest/root/$ROOTNAME"
-
-#Draw variables (example: nosie, pedestal, etc.)
-/home/wangjunhao/beamtest/draw/drawval/build/drawval $ROOTFILE 
-
-#Draw sum waveform
-#/home/wangjunhao/beamtest/draw/drawval/build/drawsumwave $ROOTFILE 
-
-#Draw 5x5 sum waveform (max 5000 events)
-/home/wangjunhao/beamtest/draw/drawval/build/draw5x5sumwave $ROOTFILE 
-
-#Draw single channel waveform (input: x y event; default root: /home/wangjunhao/beamtest/root/re.root)
-#/home/wangjunhao/beamtest/draw/drawwave/build/drawwave 3 3 100 
-
-#Draw 5x5 single channel waveform (input: event; default root: /home/wangjunhao/beamtest/root/re.root)
-#/home/wangjunhao/beamtest/draw/drawwave/build/draw5x5 100
-
-#Draw high gain vs low gain ratio
-# /home/wangjunhao/beamtest/draw/drawval/build/drawhlratio $ROOTFILE
-
-#Draw MiP peak histogram (or more with cutvalue default cut 1000)
-/home/wangjunhao/beamtest/draw/elecal/build/drawPeak $ROOTFILE
-#/home/wangjunhao/beamtest/draw/elecal/build/drawPeak $ROOTFILE 1500
+popd
