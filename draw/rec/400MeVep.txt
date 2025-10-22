@@ -1,0 +1,14 @@
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T075153_0_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T075323_1_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T075454_2_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T075631_3_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T075826_4_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T075956_5_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T080133_6_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T080328_7_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T080452_8_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T080716_9_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T080940_10_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T081150_11_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T081400_12_recon.root
+/home/kkbo/beamtest/root/20251022_12/data_ECAL_20251022T081623_13_recon.root

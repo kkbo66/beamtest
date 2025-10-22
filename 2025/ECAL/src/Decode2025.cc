@@ -70,7 +70,7 @@ bool Decode2025::clear(float (&mLamp)[6][_Npoints], float (&mHamp)[6][_Npoints],
 bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], float &voltage, float &current)
 {
     // move pointer to state information
-    indata.seekg(24, indata.cur);
+    indata.seekg(16, indata.cur);
     float state;
     unsigned int *tmp = new unsigned int();
     for (int i = 0; i < 12; i++)
@@ -85,7 +85,7 @@ bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], floa
             voltage = (state / 65536 * 1.15) / 2 * 800;
     }
     // move pointer to the head of block (pure data part)
-    indata.seekg(-48, indata.cur);
+    indata.seekg(-40, indata.cur);
     return true;
 }
 
@@ -470,12 +470,12 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
         *tmpL = 0, *BlockNum = 0;
         indata.read((char *)tmpL, 6);
         if (*tmpL != *TriggerID)
-            //throw_error("The triggerID in one event do not match!");
+            // throw_error("The triggerID in one event do not match!");
             std::cout << "Warning: The triggerID in one event do not match!" << std::endl;
         indata.read((char *)BlockNum, 1);
-        if (*BlockNum != 5)
-            //throw_error("Block number is not 5!");
-            std::cout << "Warning: Block number is not 5!" << std::endl;  
+        //if (*BlockNum != 10)
+            // throw_error("Block number is not 5!");
+            //std::cout << "Warning: Block number is not 5!" << std::endl;
         indata.seekg(-13 + *FrameLength - 2, indata.cur);
         indata.read((char *)tmp1, sizeof(unsigned short));
         // check frame head&tail
@@ -489,7 +489,7 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
                 // check boardID
                 indata.read((char *)BoardID, sizeof(unsigned short));
                 if (*BoardID != nb)
-                    //throw_error("BoardID is not in order!");
+                    // throw_error("BoardID is not in order!");
                     std::cout << "Warning: BoardID is not in order!" << std::endl;
                 indata.read((char *)BlockLength, sizeof(unsigned int));
                 indata.read((char *)tmp, sizeof(unsigned short));
@@ -501,7 +501,7 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
                 {
                     // check block number
                     if (*BlockNum != 1)
-                        //throw_error("Block number is not 1!");
+                        // throw_error("Block number is not 1!");
                         std::cout << "Warning: Block number is not 1!" << std::endl;
                     // check long timecode
                     indata.read((char *)timecodeL1, sizeof(unsigned long));
@@ -512,13 +512,13 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
                         if (nb == 0)
                             mTimeCode = *timecodeL1;
                         else if (mTimeCode != *timecodeL1)
-                            //throw_error("The timecodes in one event do not match!");
+                            // throw_error("The timecodes in one event do not match!");
                             std::cout << "Warning: The timecodes in one event do not match!" << std::endl;
                     }
                     else
-                        //throw_error("Two timecodes in one block do not match!");
+                        // throw_error("Two timecodes in one block do not match!");
                         std::cout << "Warning: Two timecodes in one block do not match!" << std::endl;
-                    //move pointer to the head of block (pure data part)
+                    // move pointer to the head of block (pure data part)
                     indata.seekg(-static_cast<Long64_t>(*BlockLength) + 6, indata.cur);
 
                     // boardID&channelID correspond to crystalID&hitID
@@ -620,7 +620,7 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
         mTree->Fill();
     }
     if (mEventID != FrameNum)
-        //throw_error("Event number is less than frame index!");
+        // throw_error("Event number is less than frame index!");
         std::cout << "Warning: Event number is less than frame index!" << std::endl;
 
     delete tmp;

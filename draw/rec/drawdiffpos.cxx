@@ -63,25 +63,28 @@ void drawdiffpos(string rootfile, double energy){
   TString hnameX = Form("hdiffposX_%dMeV",int(energy));
   TString hnameY = Form("hdiffposY_%dMeV",int(energy));
   TH2F *hpos = new TH2F(hname,"Difference between Tracker and Ecal Shower Position;X (cm);Y (cm)",100,-12.5,12.5,100,-12.5,12.5);
-  TH1F *hposX = new TH1F(hnameX,"Difference in X between Tracker and Ecal Shower Position;X (cm)",100,-12.5,12.5);
-  TH1F *hposY = new TH1F(hnameY,"Difference in Y between Tracker and Ecal Shower Position;Y (cm)",100,-12.5,12.5);
+  TH1F *hposX = new TH1F(hnameX,"Difference in X between Tracker and Ecal Shower Position;X (cm)",100,-5,5);
+  TH1F *hposY = new TH1F(hnameY,"Difference in Y between Tracker and Ecal Shower Position;Y (cm)",100,-5,5);
   for(int i=0;i<t->GetEntries();i++){
     t->GetEntry(i);
+    //if(i>1000) break;
     for(unsigned int j=0;j<ShowerX->size();j++){
       if(Energy_5x5->at(j)<0.5*energy) continue;
       if(SeedID->at(j)!=326034) continue; // SeedID for 150 GeV electron beam
-      //if(abs(posX[eventid])>0.5 || abs(posY[eventid])>0.5) continue;
-      int new_eventid = eventid+10;
+      int new_eventid = eventid;
+      if(new_eventid<0 || new_eventid>=int(posX.size())) continue;
       double r_tracker = Sqrt(posX[new_eventid]*posX[new_eventid]+posY[new_eventid]*posY[new_eventid]);
+      //if(abs(posX[new_eventid])>2.5 || abs(posY[new_eventid])>2.5) continue;
+      //if(posX[new_eventid]>-1 || posX[new_eventid]<-2 || posY[new_eventid]>0.5 || posY[new_eventid]<-0.5) continue;
+      //if(abs(ShowerX->at(j))>1 || abs(ShowerY->at(j))>1) continue;
       if(r_tracker>0){
-        double dx = ShowerX->at(j) - posX[eventid];
-        double dy = ShowerY->at(j) - posY[eventid];
-       // hpos->Fill(dx,dy);
-       // hposX->Fill(dx);
-       // hposY->Fill(dy);
-       hpos->Fill(posX[new_eventid],posY[new_eventid]);
-       hposX->Fill(ShowerX->at(j)-posX[eventid]);
-       hposY->Fill(ShowerY->at(j)-posY[eventid]);
+        double dx = ShowerX->at(j) - posX[new_eventid];
+        double dy = ShowerY->at(j) - posY[new_eventid];
+        hpos->Fill(dx,dy);
+        hposX->Fill(dx);
+        hposY->Fill(dy);
+        //hpos->Fill(posX[new_eventid],posY[new_eventid]);
+        //hpos->Fill(ShowerX->at(j),ShowerY->at(j));
       }
     }
   }

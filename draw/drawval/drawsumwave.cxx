@@ -60,7 +60,9 @@ void drawsumwave(TString rootname){
       gHNoiseTime[i][j] = new TGraph();
     }
   } 
-  
+ 
+  double numunderflow[5][5] = {0};
+
   for(Int_t i=0; i<5; i++){
     for(Int_t j=0; j<5; j++){
       TTreeReader myReader(t1);
@@ -74,6 +76,7 @@ void drawsumwave(TString rootname){
         }
         for(Int_t k=0; k<HAmplitude.GetSize(); k++){
           gHAmplTime[i][j]->SetPoint(gHAmplTime[i][j]->GetN(), k*12.5, HAmplitude[k]);
+          if(HAmplitude[k]<2100) numunderflow[i][j]++;
         }
         for(Int_t k=0; k<LNoise.GetSize(); k++){
           gLNoiseTime[i][j]->SetPoint(gLNoiseTime[i][j]->GetN(), k*12.5, LNoise[k]);
@@ -82,6 +85,12 @@ void drawsumwave(TString rootname){
           gHNoiseTime[i][j]->SetPoint(gHNoiseTime[i][j]->GetN(), k*12.5, HNoise[k]);
         }
       }
+    }
+  }
+
+  for(Int_t i=0; i<5; i++){
+    for(Int_t j=0; j<5; j++){
+      cout<<"Crystal ("<<i+1<<","<<j+1<<") underflow number: "<<numunderflow[i][j]<<endl;
     }
   }
 

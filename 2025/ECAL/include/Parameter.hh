@@ -47,6 +47,7 @@ class Parameter
     double HGLightYield(int n) const;
     double LGLightYield(int n) const;
     double LGMipPeak(int n) const;
+    double HGMipPeak(int n) const;
     double HGWfPara(int m,int n) const;
     double LGWfPara(int m,int n) const;
  
@@ -71,6 +72,7 @@ class Parameter
     double m_HGLightYield[25];
     double m_LGLightYield[25];
     double m_LGMipPeak[25];
+    double m_HGMipPeak[25];
     double m_HGWfPara[25][11];
     double m_LGWfPara[25][11];
 

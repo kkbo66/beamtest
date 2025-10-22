@@ -51,18 +51,26 @@ void RecHit::setCrystalID(const int id)
   m_CrystalID=id;
 }
 
-void RecHit::setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgpedestal,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip,TRandom3 r1)
+void RecHit::setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgpedestal,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip, const double hgmip,TRandom3 r1)
 {
   if((hgpeak-hgpedestal)<(hgsatupoint-400)){
     m_Energy=hgpeak-hgpedestal;
     if(m_Energy<3*hgnoise) m_Energy=0;
     else m_Energy=(m_Energy/ratio)/(lgmip-lgpedestal)*168;
+    //else m_Energy=m_Energy/(hgmip-hgpedestal)*168;
+    //else {
+    //  double weightlg = 1.0/lgnoise/lgnoise/ratio/ratio;
+    //  double weighthg = 1.0/hgnoise/hgnoise;
+    //  m_Energy = (m_Energy*weighthg + (lgpeak-lgpedestal)*ratio*weightlg)/(weighthg+weightlg);
+    //  m_Energy = m_Energy/(hgmip-hgpedestal)*168;
+    //}
     //else m_Energy=(m_Energy/ratio)/(lgmip-lgpedestal)*r1.Gaus(168,3);
   }
   else{
     m_Energy=lgpeak-lgpedestal;
     if(m_Energy<3*lgnoise) m_Energy=0;
     else m_Energy=m_Energy/(lgmip-lgpedestal)*168;
+    //else m_Energy=m_Energy*ratio/(hgmip-hgpedestal)*168;
     //else m_Energy=m_Energy/(lgmip-lgpedestal)*r1.Gaus(168,3);
   }
 
@@ -73,7 +81,7 @@ void RecHit::setEnergy(const double hgpeak,const double lgpeak,const double rati
 
 }
 
-void RecHit::setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip)
+void RecHit::setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip, const double hgmip)
 {
   if((hgpeak)<(hgsatupoint-400)){
     m_Energy=hgpeak;

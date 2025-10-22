@@ -5,17 +5,37 @@ typedef std::vector<int> Vint;
 typedef std::vector<double> Vdouble;
 typedef std::vector<TLorentzVector> Vp4;
 
-void draw2d(){
+void draw2d(string rootfile, double energy){
 
-  gStyle->SetOptStat(0);
-  TFile *f = TFile::Open("/home/kkbo/beamtest/2025/ECAL/build/ele2gev.root");
-  TTree *t = (TTree*)f->Get("rec_data");
+	gStyle->SetOptStat(0);
+  vector<string> rootlist;
+  rootlist.clear();
+  if(rootfile.find(".txt")!=string::npos){
+    ifstream infile;
+    infile.open(rootfile.c_str());
+    string line;
+    while(getline(infile,line)){
+      rootlist.push_back(line);
+    }
+  }
+  else if(rootfile.find(".root")!=string::npos){
+    rootlist.push_back(rootfile);
+  }
+  else{
+    cout<<"Please input root file"<<endl;
+    return;
+  }
 
-  double energy = 2000; // MeV
+  TChain *t = new TChain("rec_data");
+  for(unsigned int i=0;i<rootlist.size();i++){
+    t->Add(rootlist[i].c_str());
+    cout<<"Add root file: "<<rootlist[i]<<endl;
+  }
+
   double low_shower = 0.5*energy/1000;
-  double high_shower = 1.05*energy/1000;
+  double high_shower = 1.2*energy/1000;
   double low_hit = 0.4*energy/1000;
-  double high_hit = 0.9*energy/1000;
+  double high_hit = energy/1000;
 
   vector<int> *SeedID = 0;
   vector<int> *HitID = 0;

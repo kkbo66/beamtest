@@ -108,7 +108,7 @@ Vdouble DoFit(TH1F *h, TF1 *f1, TCanvas* c, TString xname, double perbin){
   return Vout;
 }
 
-void drawfitshower(string rootfile, double energy){
+void drawtrackfitshower(string rootfile, double energy){
 
 	gStyle->SetOptStat(0);
   vector<string> rootlist;
@@ -128,6 +128,23 @@ void drawfitshower(string rootfile, double energy){
     cout<<"Please input root file"<<endl;
     return;
   }
+  
+  vector<double> posX;  
+  vector<double> posY;
+  posX.clear();
+  posY.clear();
+  TFile *ftracker = TFile::Open("/home/kkbo/beamtest/root/tracker/Tracker-step4-rec.root");
+  TTree *ttracker = (TTree*)ftracker->Get("Track");
+  int trkeventid;
+  Double_t trkpos[3];
+  ttracker->SetBranchAddress("event",&trkeventid);
+  ttracker->SetBranchAddress("ecalextraHit",&trkpos);
+
+  for(int i=0;i<ttracker->GetEntries();i++){
+    ttracker->GetEntry(i);
+    posX.push_back(trkpos[0]/10);
+    posY.push_back(trkpos[1]/10);
+  }
 
   string energy_str = to_string(int(energy))+"MeV";
 
@@ -137,12 +154,14 @@ void drawfitshower(string rootfile, double energy){
     cout<<"Add root file: "<<rootlist[i]<<endl;
   }
 
+  int eventid;
   vector<int> *SeedID = 0;
   vector<int> *HitID = 0;
   vector<double> *Energy_5x5 = 0;
   vector<double> *Energy_Hit = 0;
   vector<double> *ShowerX = 0;
   vector<double> *ShowerY = 0;
+  t->SetBranchAddress("EventID",&eventid);
   t->SetBranchAddress("ShowerID",&SeedID);
   t->SetBranchAddress("ShowerE5x5",&Energy_5x5);
   t->SetBranchAddress("HitID",&HitID);
@@ -161,20 +180,21 @@ void drawfitshower(string rootfile, double energy){
     for(unsigned int j=0;j<SeedID->size();j++){
       if(SeedID->at(j)==326034){ // center crystal ID for ECAL
         double seed_energy = -1;
-        int hitnum = 0;
         for(unsigned int k=0;k<HitID->size();k++){
           if(HitID->at(k)==326034){
             seed_energy = Energy_Hit->at(k)/1000;
-            //break;
-          }
-          else if(Energy_Hit->at(k)>10){ 
-            hitnum++;
+            break;
           }        
         }
         //cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
+        int new_eventid = eventid;
+        if(new_eventid<0 || new_eventid>=int(posX.size())) continue;
+        double r_track = Sqrt(posX[new_eventid]*posX[new_eventid]+posY[new_eventid]*posY[new_eventid]);
+        if(r_track<0.0000000001) continue;
+        //if(abs(posX[new_eventid])>1 || abs(posY[new_eventid])>1) continue;
+        //if(posX[new_eventid]>-1 || posX[new_eventid]<-2 || posY[new_eventid]>0.5 || posY[new_eventid]<-0.5) continue;
         if(seed_energy<seedcut) continue;
-        if(hitnum<5) continue;
-        if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
+        //if(!(ShowerX->at(j)>-3 && ShowerX->at(j)<0 && ShowerY->at(j)<1.5 && ShowerY->at(j)>-1.5)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j)/1000);
       }
     }

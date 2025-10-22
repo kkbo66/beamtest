@@ -30,6 +30,7 @@ Parameter::Parameter()
   string ParaPath4(ParaPath);
   string ParaPath5(ParaPath);
   string ParaPath6(ParaPath);
+  string ParaPath7(ParaPath);
   
   ParaPath1+="CommomPara.dat";
   ifstream in1;
@@ -117,14 +118,13 @@ Parameter::Parameter()
   assert(in5);
 
   double LGPeak;
-  double HGPeak;
   for(int i=0;i<25;i++){
     //in5>>LGPeak>>m_LGLightYield[i]>>HGPeak>>m_HGLightYield[i];
     in5>>m_LGMipPeak[i];
   }
   in5.close();
   
-  ParaPath6+="WaveformPara.dat";
+  ParaPath6+="HGMipPeak.dat";
   ifstream in6;
   in6.open(ParaPath6);
   if(!in6.good()){
@@ -132,15 +132,30 @@ Parameter::Parameter()
   }
   assert(in6);
 
-  for(int i=0;i<50;i++){
-    if(i%2==0) {
-      for(int j=0;j<11;j++) in6>>m_LGWfPara[i/2][j];
-    }
-    else{
-      for(int j=0;j<11;j++) in6>>m_HGWfPara[i/2][j];
-    }
+  double HGPeak;
+  for(int i=0;i<25;i++){
+    //in6>>LGPeak>>m_LGLightYield[i]>>HGPeak>>m_HGLightYield[i];
+    in6>>m_HGMipPeak[i];
   }
   in6.close();
+
+  ParaPath7+="WaveformPara.dat";
+  ifstream in7;
+  in7.open(ParaPath7);
+  if(!in7.good()){
+    cout<<"Error in Opening File"<<endl;
+  }
+  assert(in7);
+
+  for(int i=0;i<50;i++){
+    if(i%2==0) {
+      for(int j=0;j<11;j++) in7>>m_LGWfPara[i/2][j];
+    }
+    else{
+      for(int j=0;j<11;j++) in7>>m_HGWfPara[i/2][j];
+    }
+  }
+  in7.close();
 }
 
 Parameter::~Parameter()
@@ -284,6 +299,11 @@ double Parameter::LGLightYield(int n) const
 double Parameter::LGMipPeak(int n) const
 {
   return m_LGMipPeak[n];
+}
+
+double Parameter::HGMipPeak(int n) const
+{
+  return m_HGMipPeak[n];
 }
 
 double Parameter::HGWfPara(int m,int n) const

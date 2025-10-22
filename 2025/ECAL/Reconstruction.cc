@@ -218,9 +218,9 @@ int main(int argc, char const *argv[])
       rechit.setCrystalID(CrystalID->at(i));
       rechit.setFrontCenter(TVector3(Para.HitPosX(CrystalID->at(i)), Para.HitPosY(CrystalID->at(i)), Para.HitPosZ(CrystalID->at(i))));
       if (IsFitAmp)
-        rechit.setEnergy(AmpHG_Fit->at(i), AmpLG_Fit->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i));
+        rechit.setEnergy(AmpHG_Fit->at(i), AmpLG_Fit->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i));
       else
-        rechit.setEnergy(AmpHG_Peak->at(i), AmpLG_Peak->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGPedestal(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), r1);
+        rechit.setEnergy(AmpHG_Peak->at(i), AmpLG_Peak->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGPedestal(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i), r1);
       rechit.setTime(TimeHG->at(i), TimeLG->at(i), AmpHG_Peak->at(i), Para.LGPedestal(i), Para.HGSatuPoint(i));
 
       if (rechit.Energy() > 0)

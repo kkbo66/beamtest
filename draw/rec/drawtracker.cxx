@@ -42,7 +42,7 @@ void drawtracker(string rootfile, double energy){
   for(int i=0;i<nentries;i++){
     t->GetEntry(i);
     double r = Sqrt(Pos[0]*Pos[0]+Pos[1]*Pos[1]);
-    if(abs(Pos[0])>25||abs(Pos[1])>25) continue;
+    //if(abs(Pos[0])>25||abs(Pos[1])>25) continue;
     if(r>0)
     hpos->Fill(Pos[0]/10,Pos[1]/10);
   }

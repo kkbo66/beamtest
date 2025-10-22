@@ -1,0 +1,4 @@
+/home/kkbo/beamtest/root/20251022_48/data_ECAL_20251022T211238_0_recon.root
+/home/kkbo/beamtest/root/20251022_48/data_ECAL_20251022T211425_1_recon.root
+/home/kkbo/beamtest/root/20251022_48/data_ECAL_20251022T211606_2_recon.root
+/home/kkbo/beamtest/root/20251022_48/data_ECAL_20251022T211801_3_recon.root
