@@ -24,6 +24,7 @@ do
   echo "Dealing with Data File No. $BEGINNUM to $ENDNUM"
   /home/kkbo/beamtest/rec.sh $DATE $BEGINNUM $ENDNUM
   ./getlist.sh $DATE 10GeVmip${MIPFILE}
+  mv 10GeVmip${MIPFILE}.txt ./build/10GeVmip/
   cd build
   ./getmip 10GeVmip/10GeVmip${MIPFILE}.txt
   mv /home/kkbo/beamtest/draw/figureroot/MIP_Spectra.root /home/kkbo/beamtest/draw/figureroot/miproot/MIP_Spectra_${MIPFILE}_${BEGINNUM}_to_${ENDNUM}.root

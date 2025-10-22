@@ -21,7 +21,7 @@ DATE=$1
 TXTNAME=$2
 
 FILEPATH="/home/kkbo/beamtest/root/"
-TXTPATH="./build/10GeVmip/"
+TXTPATH="./"
 file_recreate ${TXTPATH}${TXTNAME}.txt
 for file in `ls ${FILEPATH}${DATE}/*root`
 do
