@@ -66,10 +66,10 @@ void getnosped(vector<TString> rootfiles){
       vHNoise_sub.clear();
       Int_t nL = vLNoise.size();
       Int_t nH = vHNoise.size();
-      for(Int_t m=nL/10; m<9*nL/10; m++){
+      for(Int_t m=nL/20; m<19*nL/20; m++){
         vLNoise_sub.push_back(vLNoise[m]);
       }
-      for(Int_t m=nH/10; m<9*nH/10; m++){
+      for(Int_t m=nH/20; m<19*nH/20; m++){
         vHNoise_sub.push_back(vHNoise[m]);
       }
       double orgin_meanL = calculateMean(vLNoise_sub);

@@ -68,8 +68,8 @@ void fitmip(){
   }
 
   ofstream entryfile("entries.txt");
-  //ofstream lowfile("/home/kkbo/beamtest/draw/par/forre/parameters_mipfit_lowgain.txt");
-  //ofstream lowpeakfile("/home/kkbo/beamtest/draw/par/forre/LGMipPeak.dat");
+  ofstream lowfile("/home/kkbo/beamtest/draw/par/forre/parameters_mipfit_lowgain.txt");
+  ofstream lowpeakfile("/home/kkbo/beamtest/draw/par/forre/LGMipPeak.dat");
   TCanvas *c1 = new TCanvas("c1", "MIP Fit Low Gain", 800, 600);
   c1->Divide(5, 5);
   for(Int_t i=0; i<5; i++){
@@ -80,28 +80,28 @@ void fitmip(){
                 << hLowGainMIP[i][j]->Integral() << endl;
       int maxbin = hLowGainMIP[i][j]->GetMaximumBin();
       double maxvalue = hLowGainMIP[i][j]->GetBinCenter(maxbin);
-      TF1 *fitLow = new TF1("fitLow", landaugauss, maxvalue-200, maxvalue+500, 4);
+      TF1 *fitLow = new TF1("fitLow", landaugauss, maxvalue-150, maxvalue+500, 4);
       fitLow->SetParameters(maxvalue, 10, 50, 1);
-      //TFitResultPtr r = hLowGainMIP[i][j]->Fit(fitLow, "RS"); 
-      //for(int iter=0; iter<50; iter++){
-      //  if(r->IsValid()&&r->Status()==0) break;
-      //  else {
-      //    fitLow->SetParameters(maxvalue*(0.99+0.002*(iter+1)), 10+10*(iter+1), 50+10*(iter+1),1);
-      //    r = hLowGainMIP[i][j]->Fit(fitLow, "RS");
-      //  }
-      //}
-      //fitLow->Draw("same");
-      //lowfile << Form("Low Gain MIP %d %d: ", i+1, j+1)
-      //          << "MPV = " << fitLow->GetParameter(0) << ", "
-      //          << "LandauWidth = " << fitLow->GetParameter(1) << ", "
-      //          << "GaussSigma = " << fitLow->GetParameter(2) << endl;
-      //lowpeakfile << fitLow->GetMaximumX() << endl;
+      TFitResultPtr r = hLowGainMIP[i][j]->Fit(fitLow, "RS"); 
+      for(int iter=0; iter<50; iter++){
+        if(r->IsValid()&&r->Status()==0) break;
+        else {
+          fitLow->SetParameters(maxvalue*(0.99+0.002*(iter+1)), 10+10*(iter+1), 50+10*(iter+1),1);
+          r = hLowGainMIP[i][j]->Fit(fitLow, "RS");
+        }
+      }
+      fitLow->Draw("same");
+      lowfile << Form("Low Gain MIP %d %d: ", i+1, j+1)
+                << "MPV = " << fitLow->GetParameter(0) << ", "
+                << "LandauWidth = " << fitLow->GetParameter(1) << ", "
+                << "GaussSigma = " << fitLow->GetParameter(2) << endl;
+      lowpeakfile << fitLow->GetMaximumX() << endl;
     }
   }
-  //lowfile.close();
-  //lowpeakfile.close();
-  //ofstream highfile("/home/kkbo/beamtest/draw/par/forre/parameters_mipfit_highgain.txt");
-  //ofstream highpeakfile("/home/kkbo/beamtest/draw/par/forre/HGMipPeak.dat");
+  lowfile.close();
+  lowpeakfile.close();
+  ofstream highfile("/home/kkbo/beamtest/draw/par/forre/parameters_mipfit_highgain.txt");
+  ofstream highpeakfile("/home/kkbo/beamtest/draw/par/forre/HGMipPeak.dat");
   TCanvas *c2 = new TCanvas("c2", "MIP Fit High Gain", 800, 600);
   c2->Divide(5, 5);
   for(Int_t i=0; i<5; i++){
@@ -112,30 +112,30 @@ void fitmip(){
                 << hHighGainMIP[i][j]->Integral() << endl;
       int maxbin = hHighGainMIP[i][j]->GetMaximumBin();
       double maxvalue = hHighGainMIP[i][j]->GetBinCenter(maxbin);
-      TF1 *fitHigh = new TF1("fitHigh", landaugauss, maxvalue-2000, maxvalue+5000, 4);
+      TF1 *fitHigh = new TF1("fitHigh", landaugauss, maxvalue-1500, maxvalue+5000, 4);
       fitHigh->SetParameters(maxvalue, 100, 600, 1);
-      //TFitResultPtr r = hHighGainMIP[i][j]->Fit(fitHigh, "RS");
-      //for(int iter=0; iter<50; iter++){
-      //  if(r->IsValid()&&r->Status()==0) break;
-      //  else {
-      //    fitHigh->SetParameters(maxvalue*(0.99+0.002*(iter+1)), 100+100*(iter+1), 500+100*(iter+1),1);
-      //    r = hHighGainMIP[i][j]->Fit(fitHigh, "RS");
-      //  }
-      //}
-      //fitHigh->Draw("same");
-      //highfile << Form("High Gain MIP %d %d: ", i+1, j+1)
-      //          << "MPV = " << fitHigh->GetParameter(0) << ", "
-      //          << "LandauWidth = " << fitHigh->GetParameter(1) << ", "
-      //          << "GaussSigma = " << fitHigh->GetParameter(2) << endl;
-      //highpeakfile << fitHigh->GetMaximumX() << endl;
+      TFitResultPtr r = hHighGainMIP[i][j]->Fit(fitHigh, "RS");
+      for(int iter=0; iter<50; iter++){
+        if(r->IsValid()&&r->Status()==0) break;
+        else {
+          fitHigh->SetParameters(maxvalue*(0.99+0.002*(iter+1)), 100+100*(iter+1), 500+100*(iter+1),1);
+          r = hHighGainMIP[i][j]->Fit(fitHigh, "RS");
+        }
+      }
+      fitHigh->Draw("same");
+      highfile << Form("High Gain MIP %d %d: ", i+1, j+1)
+                << "MPV = " << fitHigh->GetParameter(0) << ", "
+                << "LandauWidth = " << fitHigh->GetParameter(1) << ", "
+                << "GaussSigma = " << fitHigh->GetParameter(2) << endl;
+      highpeakfile << fitHigh->GetMaximumX() << endl;
     }
   }
   
-  //TFile *fout = new TFile("/home/kkbo/beamtest/draw/figureroot/MIP_Fit_Results.root", "RECREATE");
-  //fout->cd();
-  //c1->Write();
-  //c2->Write();
-  //fout->Close();
+  TFile *fout = new TFile("/home/kkbo/beamtest/draw/figureroot/MIP_Fit_Results.root", "RECREATE");
+  fout->cd();
+  c1->Write();
+  c2->Write();
+  fout->Close();
 }
 
 #if !defined(__CINT__) && !defined(__CLING__)
