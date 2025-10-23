@@ -19,6 +19,7 @@ class Cluster2Shower
   ~Cluster2Shower();
 
   void Convert(map<int,Cluster>& ClusterMap,map<int,Shower>& ShowerMap);
+  void Convertmulti(multimap<int,Cluster>& ClusterMap,multimap<int,Shower>& ShowerMap);
 
   private:
   SeedFinder* m_SeedFinder;

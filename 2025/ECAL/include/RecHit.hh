@@ -21,6 +21,7 @@ class RecHit
   TVector3 FrontCenter() const;
   void setCrystalID(const int id);
   //void setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgpedestal,const double hgnoise,const double lgpedestal,const double lgnoise,const double hgly,const double lgly);
+  void setEnergy(const double amp,const double hgnoise, const double hgpedestal, const double hgmip);
   void setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgpedestal,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip, const double hgmip, TRandom3 r1);
   void setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip, const double hgmip);
   void setEnergy(const double peak, const double lgpedestal,const bool isHG,const double hgnoise,const double lgnoise,const double ratio,const double lgmip);

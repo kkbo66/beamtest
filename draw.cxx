@@ -13,9 +13,9 @@ void draw(TString name) {
   c3->Draw();
   TCanvas *c4 = (TCanvas *)f2->Get("cLAmplTime");
   c4->Draw();
-  TFile *f3 = new TFile("/home/kkbo/beamtest/draw/figureroot/Peak_" + name);
-  TCanvas *c5 = (TCanvas *)f3->Get("c1");
-  c5->Draw();
-  TCanvas *c6 = (TCanvas *)f3->Get("c2");
-  c6->Draw();
+  //TFile *f3 = new TFile("/home/kkbo/beamtest/draw/figureroot/Peak_" + name);
+  //TCanvas *c5 = (TCanvas *)f3->Get("c1");
+  //c5->Draw();
+  //TCanvas *c6 = (TCanvas *)f3->Get("c2");
+  //c6->Draw();
 }

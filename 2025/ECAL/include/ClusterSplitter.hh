@@ -21,6 +21,7 @@ class ClusterSplitter
 
   public:
   void Split(Cluster& aCluster,const vector<int>& SeedIDVec,map<int,Shower>& ShowerMap);
+  void Splitmulti(Cluster& aCluster,const vector<int>& SeedIDVec,multimap<int,Shower>& ShowerMap);
 
   ShowerEnergy* m_ShowerE;
   ShowerPosition* m_ShowerPos;

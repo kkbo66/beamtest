@@ -36,7 +36,9 @@ Double_t landaugauss(Double_t *x, Double_t *par) {
 }
 
 void fitmip(){
-  
+ 
+  gStyle->SetOptStat(0);
+
   TFile *fin = new TFile("/home/kkbo/beamtest/draw/figureroot/MIP_Spectra.root", "READ");
   TTree *tree = (TTree*)fin->Get("MIP_Spectra");
 
@@ -130,6 +132,8 @@ void fitmip(){
       highpeakfile << fitHigh->GetMaximumX() << endl;
     }
   }
+  TCanvas *c3 = new TCanvas("c3", "MIP Fit Entries", 800, 600);
+  hHighGainMIP[2][2]->Draw();
   
   TFile *fout = new TFile("/home/kkbo/beamtest/draw/figureroot/MIP_Fit_Results.root", "RECREATE");
   fout->cd();

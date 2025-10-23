@@ -34,3 +34,22 @@ void Cluster2Shower::Convert(map<int,Cluster>& ClusterMap,map<int,Shower>& Showe
     //cout<<ShowerMap.size()<<endl;
   }
 }
+
+void Cluster2Shower::Convertmulti(multimap<int,Cluster>& ClusterMap,multimap<int,Shower>& ShowerMap)
+{
+  multimap<int,Cluster>::iterator iter;
+  vector<int> SeedIDVec;
+  vector<int>::const_iterator citer;
+
+  for(iter=ClusterMap.begin();iter!=ClusterMap.end();iter++){
+    m_SeedFinder->Seed(iter->second,SeedIDVec);
+    if(!SeedIDVec.empty()){
+      for(citer=SeedIDVec.begin();citer!=SeedIDVec.end();citer++){
+        iter->second.InsertSeed(*citer,iter->second.Find(*citer)->second);
+      }
+    }
+    m_Splitter->Splitmulti(iter->second,SeedIDVec,ShowerMap);
+    //cout<<ShowerMap.size()<<endl;
+  }
+}
+

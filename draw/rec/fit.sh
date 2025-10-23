@@ -16,8 +16,10 @@ file_create(){
 para_num $@
 energy=$1
 
+TXTPATH="./energylist/"
+
 file_create EnergyResolution.txt
-root -l -b -q "drawfitshower.cxx(\"${energy}MeVep.txt\",${energy})" > ${energy}MeVep_fit.log 
+root -l -b -q "drawfitshower.cxx(\"${TXTPATH}${energy}MeVep.txt\",${energy})" > ${energy}MeVep_fit.log 
 num=$(grep "Resolution" ${energy}MeVep_fit.log | sed -n 's/.*Resolution: *\([0-9.]\+\) %.*/\1/p')
 if grep -q "^${energy}\b " EnergyResolution.txt; then
   sed -i "s/^${energy}\b .*/${energy} ${num}/" EnergyResolution.txt

@@ -51,4 +51,4 @@ done
 
 cd ~/beamtest/
 
-#rm -rf /home/kkbo/beamtest/data/$DATE/data*ECAL*.dat
+rm -rf /home/kkbo/beamtest/data/$DATE/data*ECAL*.dat

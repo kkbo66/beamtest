@@ -34,6 +34,9 @@ target_link_libraries(ECALDigi ${ROOT_LIBRARIES})
 add_executable(Reconstruction "Reconstruction.cc" ${sources} ${headers})
 target_link_libraries(Reconstruction ${ROOT_LIBRARIES})
 
+add_executable(multiReconstruction "multiReconstruction.cc" ${sources} ${headers})
+target_link_libraries(multiReconstruction ${ROOT_LIBRARIES})
+
 # ROOT_GENERATE_DICTIONARY(data_model_dict ${PROJECT_SOURCE_DIR}/include/data_model.hh
 #   MODULE data_model
 #   LINKDEF ${PROJECT_SOURCE_DIR}/include/LinkDef.h)

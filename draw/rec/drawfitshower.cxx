@@ -70,12 +70,12 @@ Vdouble DoFit(TH1F *h, TF1 *f1, TCanvas* c, TString xname, double perbin){
 
 				h->SetYTitle(Form("Events /%.2f(MeV/c^{2})",1000*perbin));
 				h->SetXTitle(xname);
-				h->GetYaxis()->SetLabelSize(0.06);
-				h->GetYaxis()->SetTitleSize(0.06);
-				h->GetXaxis()->SetLabelSize(0.06);
-				h->GetXaxis()->SetTitleSize(0.06);
-        h->GetXaxis()->SetTitleOffset(1);
-        h->GetYaxis()->SetTitleOffset(1.5);
+				h->GetYaxis()->SetLabelSize(0.05);
+				h->GetYaxis()->SetTitleSize(0.05);
+				h->GetXaxis()->SetLabelSize(0.05);
+				h->GetXaxis()->SetTitleSize(0.05);
+        h->GetXaxis()->SetTitleOffset(0.9);
+        h->GetYaxis()->SetTitleOffset(0.9);
 
 				int color;
 				color = kBlue;
@@ -174,7 +174,7 @@ void drawfitshower(string rootfile, double energy){
         //cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
         if(seed_energy<seedcut) continue;
         if(hitnum<5) continue;
-        if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
+        //if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j)/1000);
       }
     }

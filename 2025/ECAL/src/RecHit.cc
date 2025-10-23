@@ -51,6 +51,13 @@ void RecHit::setCrystalID(const int id)
   m_CrystalID=id;
 }
 
+void RecHit::setEnergy(const double amp, double hgnoise,const double hgpedestal, const double hgmip)
+{
+  m_Energy=amp;
+  if(m_Energy<3*hgnoise) m_Energy=0;
+  else m_Energy=(m_Energy)/(hgmip-hgpedestal)*168;
+}
+
 void RecHit::setEnergy(const double hgpeak,const double lgpeak,const double ratio,const double hgsatupoint,const double hgpedestal,const double hgnoise,const double lgpedestal,const double lgnoise,const double lgmip, const double hgmip,TRandom3 r1)
 {
   if((hgpeak-hgpedestal)<(hgsatupoint-400)){
