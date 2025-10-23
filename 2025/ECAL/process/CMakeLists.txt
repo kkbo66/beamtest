@@ -1,6 +1,6 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required(VERSION 3.1)
 
-project ("ECALDataProcess")
+project("ECALDataProcess")
 
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -g2 -ggdb")
@@ -21,14 +21,20 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 add_executable(ECALTrigger "ECALTrigger.cc" ${sources} ${headers})
 target_link_libraries(ECALTrigger ${ROOT_LIBRARIES})
 
+# get template paramters [par0:decoded file]
 add_executable(SeekParameters "SeekParameters.cc" ${sources} ${headers})
 target_link_libraries(SeekParameters ${ROOT_LIBRARIES})
 
+# draw and fit MIP spectra [par0:decoded file; par1: peak cut value for HG]
 add_executable(FitMip "FitMip.cc" ${sources} ${headers})
 target_link_libraries(FitMip ${ROOT_LIBRARIES})
 
 add_executable(DrawValue "DrawValue.cc" ${sources} ${headers})
 target_link_libraries(DrawValue ${ROOT_LIBRARIES})
+
+# draw reconstructed position and energy distribution for electron [par0: reconstructed file; par1: electron beam energy]
+add_executable(DrawPosEnergy "DrawPosEnergy.cc" ${sources} ${headers})
+target_link_libraries(DrawPosEnergy ${ROOT_LIBRARIES})
 
 file(GLOB SHELL_SCRIPTS "${CMAKE_SOURCE_DIR}/*.sh")
 

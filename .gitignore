@@ -9,6 +9,7 @@ build*
 .svn
 cmt
 .vscode
+.editorconfig
 *.root
 data*.dat
 
