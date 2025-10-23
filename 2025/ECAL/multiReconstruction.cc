@@ -111,7 +111,7 @@ int main(int argc, char const *argv[])
 
   TFile *f = new TFile(outputfile.Data(), "recreate");
 
-  int recmode = 0;
+  int recmode = 1;
   if (argc == 4)
     recmode = atoi(argv[3]);
 

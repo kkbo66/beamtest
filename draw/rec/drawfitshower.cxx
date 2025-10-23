@@ -156,6 +156,7 @@ void drawfitshower(string rootfile, double energy){
   double seedcut = 0.2*energy/1000;
   TH1F *henergy_ecal = new TH1F("henergy_ecal","ECAL Energy Distribution",100,low,high);
   double perbin = (high-low)/100.0;
+  cout<<t->GetEntries()<<" entries in total."<<endl;
   for(int i=0;i<t->GetEntries();i++){
     t->GetEntry(i);
     for(unsigned int j=0;j<SeedID->size();j++){
@@ -173,7 +174,7 @@ void drawfitshower(string rootfile, double energy){
         }
         //cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
         if(seed_energy<seedcut) continue;
-        if(hitnum<5) continue;
+        if(hitnum<2) continue;
         //if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j)/1000);
       }
