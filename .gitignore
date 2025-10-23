@@ -67,3 +67,5 @@ data*.dat
 /python/
 /share/
 .cache/
+/2025/ECAL/process
+/2025/ECALback

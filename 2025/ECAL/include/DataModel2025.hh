@@ -18,8 +18,8 @@ public:
     DataModel2025();
     ~DataModel2025();
     void Set(int, float, float, float[_Npoints], float[_Npoints], float[_Nnoise], float[_Nnoise], float, float, float, float);
-
     bool clear();
+    void AddHit(double, double, double, double);
 
     // Hit infomation
     Long64_t CrystalID;
@@ -34,6 +34,12 @@ public:
     Double_t HighGainPedestal;
     Double_t LowGainPeak;
     Double_t HighGainPeak;
+
+    // TQ information
+    Double_t TimeStamp;
+    std::vector<Double_t> CoarseTime;
+    std::vector<Double_t> FineTime;
+    std::vector<Double_t> Amplitude;
 };
 
 #endif

@@ -31,30 +31,8 @@ target_link_libraries(ECALdig2root2025 ${ROOT_LIBRARIES})
 add_executable(ECALDigi "ECALDigi.cc" ${sources} ${headers})
 target_link_libraries(ECALDigi ${ROOT_LIBRARIES})
 
-add_executable(ECALTrigger "ECALTrigger.cc" ${sources} ${headers})
-target_link_libraries(ECALTrigger ${ROOT_LIBRARIES})
-
-add_executable(SeekParameters "SeekParameters.cc" ${sources} ${headers})
-target_link_libraries(SeekParameters ${ROOT_LIBRARIES})
-
-#add_executable(ReadRootFile "ReadRootFile.cc" ${sources} ${headers})
-#target_link_libraries(ReadRootFile ${ROOT_LIBRARIES})
-
-#add_executable(Filter "Filter.cc" ${sources} ${headers})
-#target_link_libraries(Filter ${ROOT_LIBRARIES})
-
 add_executable(Reconstruction "Reconstruction.cc" ${sources} ${headers})
 target_link_libraries(Reconstruction ${ROOT_LIBRARIES})
-
-#add_executable(GetWaveform "GetWaveform.cc" ${sources} ${headers})
-#target_link_libraries(GetWaveform ${ROOT_LIBRARIES})
-
-#add_executable(RecTime "RecTime.cc" ${sources} ${headers})
-#target_link_libraries(RecTime ${ROOT_LIBRARIES})
-
-
-#add_executable(TriggerDecode "TriggerDecode.cc" ${sources} ${headers})
-#target_link_libraries(TriggerDecode ${ROOT_LIBRARIES})
 
 # ROOT_GENERATE_DICTIONARY(data_model_dict ${PROJECT_SOURCE_DIR}/include/data_model.hh
 #   MODULE data_model

@@ -115,7 +115,9 @@ int main(int argc, char const *argv[])
             // 直传格式
             // De->GetHit(indata);
             // DAQ格式
-            De->GetHitDAQ(indata);
+            // De->GetHitDAQ(indata);
+            // 在线格式
+            De->GetHitOnline(indata);
             indata.close();
         }
         delete De;
@@ -132,7 +134,8 @@ int main(int argc, char const *argv[])
                 return -1;
             }
             // De->GetHit(indata);
-            De->GetHitDAQ(indata);
+            // De->GetHitDAQ(indata);
+            De->GetHitOnline(indata);
             indata.close();
             delete De;
         }
