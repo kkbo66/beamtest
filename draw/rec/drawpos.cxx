@@ -53,7 +53,7 @@ void drawpos(string rootfile, double energy){
     t->GetEntry(i);
     for(unsigned int j=0;j<ShowerX->size();j++){
       if(SeedID->at(j)!=326034) continue;
-      if(Energy_5x5->at(j)<energy*0.5 || Energy_5x5->at(j)>energy*1.2) continue;
+      if(Energy_5x5->at(j)<energy*0.8 || Energy_5x5->at(j)>energy*1.2) continue;
       hpos->Fill(ShowerX->at(j),ShowerY->at(j));
       hposx->Fill(ShowerX->at(j));
       hposy->Fill(ShowerY->at(j));
