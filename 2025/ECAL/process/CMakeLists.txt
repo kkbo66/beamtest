@@ -1,0 +1,41 @@
+cmake_minimum_required (VERSION 3.1)
+
+project ("ECALDataProcess")
+
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -g2 -ggdb")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GIBCXX_USE_CXX11_ABI=0")
+
+#add_subdirectory(csv)
+
+#SET(CMAKE_CXX_STANDARD 14)
+
+find_package(ROOT REQUIRED)
+
+include_directories(${PROJECT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR})
+include(${ROOT_USE_FILE})
+
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(ECALTrigger "ECALTrigger.cc" ${sources} ${headers})
+target_link_libraries(ECALTrigger ${ROOT_LIBRARIES})
+
+add_executable(SeekParameters "SeekParameters.cc" ${sources} ${headers})
+target_link_libraries(SeekParameters ${ROOT_LIBRARIES})
+
+add_executable(FitMip "FitMip.cc" ${sources} ${headers})
+target_link_libraries(FitMip ${ROOT_LIBRARIES})
+
+add_executable(DrawValue "DrawValue.cc" ${sources} ${headers})
+target_link_libraries(DrawValue ${ROOT_LIBRARIES})
+
+file(GLOB SHELL_SCRIPTS "${CMAKE_SOURCE_DIR}/*.sh")
+
+file(COPY ${SHELL_SCRIPTS} DESTINATION ${CMAKE_BINARY_DIR})
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/data")
+
+
+
+
