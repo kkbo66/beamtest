@@ -5,6 +5,7 @@
 
 DataModel2025::DataModel2025()
 {
+
     clear();
 }
 
@@ -24,6 +25,11 @@ bool DataModel2025::clear()
     HighGainPedestal = 0;
     LowGainPeak = 0;
     HighGainPeak = 0;
+
+    TimeStamp = 0;
+    CoarseTime.clear();
+    FineTime.clear();
+    Amplitude.clear();
 
     return true;
 }
@@ -50,4 +56,12 @@ void DataModel2025::Set(int crystalID, float tmpera1, float tmpera2, float rowal
     HighGainPedestal = mhplat;
     LowGainPeak = mlpeak;
     HighGainPeak = mhpeak;
+}
+
+void DataModel2025::AddHit(double timestamp, double coarsetime, double finetime, double amplitude)
+{
+    TimeStamp = timestamp;
+    CoarseTime.push_back(coarsetime);
+    FineTime.push_back(finetime);
+    Amplitude.push_back(amplitude);
 }
