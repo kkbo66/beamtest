@@ -223,7 +223,7 @@ bool Decode2025::ReadData(std::ifstream &indata, double &timestamp, std::vector<
         throw_error("cluster length is wrong!");
     // get short timdecode
     indata.read((char *)tmp, sizeof(unsigned short));
-    timestamp = *tmp;
+    timestamp = *tmp * 12.5;
     // get cluster triggerID
     indata.read((char *)tmp, sizeof(unsigned short));
     if (*tmp != 0x0001)
@@ -244,8 +244,8 @@ bool Decode2025::ReadData(std::ifstream &indata, double &timestamp, std::vector<
         temp3 = temp2 >> 16;
         ctime = temp2 - static_cast<int>(pow(2, 16)) * temp3;
         channelID.push_back(ch);
-        coarsetime.push_back(ctime);
-        finetime.push_back(ftime);
+        coarsetime.push_back(ctime * 12.5);
+        finetime.push_back(ftime * 12.5);
         amplitude.push_back(amp);
     }
 
