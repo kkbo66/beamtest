@@ -267,21 +267,22 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
       maxbin = i;
     }
   }
-  energy = maxbin * energy_test->GetBinWidth(0);
+  energy = std::round(maxbin * energy_test->GetBinWidth(0) / 100) * 100;
   string energy_str = to_string(int(energy)) + "MeV";
   double low = 0.5 * energy / 1000;
   double high = 1.2 * energy / 1000;
   double seedcut = 0.2 * energy / 1000;
-  TH1F *henergy_ecal = new TH1F("henergy_ecal", "ECAL Energy Distribution", 200, low, high);
-  double perbin = (high - low) / 200.0;
-  cout << t->GetEntries() << " entries in total." << endl;
+  int binnum = 100;
+  TH1F *henergy_ecal = new TH1F("henergy_ecal", "ECAL Energy Distribution", binnum, low, high);
+  double perbin = (high - low) / binnum;
   for (int i = 0; i < t->GetEntries(); i++)
   {
     t->GetEntry(i);
     for (unsigned int j = 0; j < SeedID->size(); j++)
     {
       if (SeedID->at(j) == 326034)
-      { // center crystal ID for ECAL
+      {
+        // center crystal ID for ECAL
         double seed_energy = -1;
         int hitnum = 0;
         for (unsigned int k = 0; k < HitID->size(); k++)
@@ -289,22 +290,21 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
           if (HitID->at(k) == 326034)
           {
             seed_energy = Energy_Hit->at(k) / 1000;
-            // break;
           }
-          else if (Energy_Hit->at(k) > 5)
+          else if (Energy_Hit->at(k) > 3)
           {
             hitnum++;
           }
         }
-       
+
         if (seed_energy < seedcut)
           continue;
         if (hitnum < 2)
           continue;
         // select those events hitting the central area
         int poslimit = 2;
-        if (!(ShowerX->at(j) > -poslimit && ShowerX->at(j) < poslimit && ShowerY->at(j) < poslimit && ShowerY->at(j) > -poslimit))
-          continue;
+        // if (!(ShowerX->at(j) > -poslimit && ShowerX->at(j) < poslimit && ShowerY->at(j) < poslimit && ShowerY->at(j) > -poslimit))
+        //   continue;
 
         // henergy_ecal->Fill(Energy_3x3->at(j) / 1000);
         henergy_ecal->Fill(Energy_5x5->at(j) / 1000);
@@ -314,7 +314,6 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
       }
     }
   }
-
   TString pos_name = "c_pos_" + energy_str;
   TCanvas *c_pos = new TCanvas(pos_name, pos_name, 800, 600);
   c_pos->cd();
@@ -375,7 +374,8 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
   mean = Vfit[0];
   sigma = Vfit[1];
   c->SaveAs(Form("%s.png", canvas_name.Data()));
-  cout << "Event entries: " << henergy_ecal->Integral() << endl;
+  cout << t->GetEntries() << " entries in total." << endl;
+  cout << "Event entries selected: " << henergy_ecal->Integral() << endl;
   cout << "Energy: " << energy_str << ", Mean: " << mean * 1000 << " MeV, Resolution: " << sigma << " %" << endl;
 }
 int main(int argc, char *argv[])

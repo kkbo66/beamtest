@@ -130,11 +130,16 @@ bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], floa
     {
         indata.read((char *)tmp, sizeof(unsigned short));
         state = hex2float(*tmp);
-        if (i < 10)
-            temperature[i] = ((state / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-        else if (i == 10)
+        if (i < 4)
+            temperature[3 - i] = ((state / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
+        else if (i < 8)
+            temperature[11 - i] = ((state / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
+        else if (i > 9)
+            temperature[19 - i] = ((state / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
+
+        if (i == 8)
             current = (state / 65536 * 1.15) / 2 * 50;
-        else
+        if (i == 9)
             voltage = (state / 65536 * 1.15) / 2 * 800;
     }
     // move pointer to the head of block (pure data part)
@@ -315,10 +320,10 @@ Decode2025::Decode2025(std::string filename) : mHit(25)
         leaf_list += ":HighGainPeak/D";
 
         mTree->Branch(name.data(), &mHit[i]->CrystalID, leaf_list.data());
-        mTree->Branch(Form("%s.TimeStamp", name.data()), &mHit[i]->TimeStamp, "TimeStamp/D");
-        mTree->Branch(Form("%s.CoarseTime", name.data()), &mHit[i]->CoarseTime);
-        mTree->Branch(Form("%s.FineTime", name.data()), &mHit[i]->FineTime);
-        mTree->Branch(Form("%s.Amplitude", name.data()), &mHit[i]->Amplitude);
+        mTree->Branch(Form("%s_TimeStamp", name.data()), &mHit[i]->TimeStamp, "TimeStamp/D");
+        mTree->Branch(Form("%s_CoarseTime", name.data()), &mHit[i]->CoarseTime);
+        mTree->Branch(Form("%s_FineTime", name.data()), &mHit[i]->FineTime);
+        mTree->Branch(Form("%s_Amplitude", name.data()), &mHit[i]->Amplitude);
     }
 
     mEventID = mTriggerID = mTimeCode = 0;
@@ -583,8 +588,8 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
             std::cout << "Warning: The triggerID in one event do not match!" << std::endl;
         indata.read((char *)BlockNum, 1);
         if (*BlockNum != 5)
-            //throw_error("Block number is not 5!");
-            std::cout << "Warning: Block number is not 5!" << std::endl;  
+            // throw_error("Block number is not 5!");
+            std::cout << "Warning: Block number is not 5!" << std::endl;
         indata.seekg(-13 + *FrameLength - 2, indata.cur);
         indata.read((char *)tmp1, sizeof(unsigned short));
         // check frame head&tail
@@ -923,6 +928,31 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
                             M = 28 - *BoardID;
                             C = Channel2C(i);
                             CrystalID = 3 * 100000 + M * 1000 + C;
+                            switch (i)
+                            {
+                            case 0:
+                                temperature[0] = mTemperature[2];
+                                temperature[1] = mTemperature[3];
+                                break;
+                            case 1:
+                                temperature[0] = mTemperature[0];
+                                temperature[1] = mTemperature[1];
+                                break;
+                            case 3:
+                                temperature[0] = mTemperature[4];
+                                temperature[1] = mTemperature[5];
+                                break;
+                            case 4:
+                                temperature[0] = mTemperature[8];
+                                temperature[1] = mTemperature[9];
+                                break;
+                            case 5:
+                                temperature[0] = mTemperature[6];
+                                temperature[1] = mTemperature[7];
+                                break;
+                            default:
+                                break;
+                            }
 
                             if (i < 2)
                                 mHit[*BoardID * 5 + i]->Set(CrystalID, temperature[0], temperature[1], ampLG, ampHG, noiLG, noiHG, mLbase[i], mHbase[i], mLpeak[i], mHpeak[i]);

@@ -7,9 +7,9 @@ para_num() {
 }
 para_num $@
 
-# 输入参数1: DAQ服务器中的数据文件夹路径
-# 输入参数2：拷贝的文件数目
-# 输入参数3：电子束流能量(not necessary)
+# 输入参数1: DAQ服务器中的数据文件夹路径or'202510xx_xx'
+# 输入参数2：拷贝的文件数目(缺省时拷贝全部文件)
+# 输入参数3：电子束流能量(缺省时自动寻找能量)
 DATAFILEPATH=$1
 FILENUMBER=$2
 ENERGYCUT=$3
@@ -34,6 +34,9 @@ if [ ! -f "raw.root" ]; then
     exit 1
   fi
   i=0
+  if [[ ! "$DATAFILEPATH" == *"/"* ]]; then
+    DATAFILEPATH=/data/DAQ/Beam_2510/$DATAFILEPATH
+  fi
   # 拷贝DAQ服务器的数据到本地，跳过已有文件
   ssh "lunon@192.168.7.150" "find '$DATAFILEPATH' -type f" |
     while read -r temp; do
@@ -43,7 +46,7 @@ if [ ! -f "raw.root" ]; then
         rsync -h --ignore-existing --progress lunon@192.168.7.150:${DATAFILEPATH}/${dataname} .
         ${DECODE_DIR}/ECALdig2root2025 ${dataname} ${dataname%.dat}.root
         ((i++))
-        if [ $i -eq $FILENUMBER ]; then
+        if [[ (-n $FILENUMBER) && ($i -eq $FILENUMBER) ]]; then
           break
         fi
       fi
