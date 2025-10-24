@@ -134,6 +134,63 @@ std::vector<double> DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double pe
   return Vout;
 }
 
+void PosRes(std::string ecalfile, std::string trackfile)
+{
+  TFile *InfileECAL = new TFile(ecalfile.data(), "READ");
+  TTree *TrECAL = (TTree *)InfileECAL->Get("rec_data");
+  vector<int> *SeedID = 0;
+  vector<int> *HitID = 0;
+  vector<double> *Energy_5x5 = 0;
+  vector<double> *Energy_Hit = 0;
+  vector<double> *ShowerX = 0;
+  vector<double> *ShowerY = 0;
+  int triggerID;
+  TrECAL->SetBranchAddress("EventID", &triggerID);
+  TrECAL->SetBranchAddress("ShowerID", &SeedID);
+  TrECAL->SetBranchAddress("ShowerE5x5", &Energy_5x5);
+  TrECAL->SetBranchAddress("HitID", &HitID);
+  TrECAL->SetBranchAddress("HitEnergy", &Energy_Hit);
+  TrECAL->SetBranchAddress("ShowerPosX5x5", &ShowerX);
+  TrECAL->SetBranchAddress("ShowerPosY5x5", &ShowerY);
+
+  TH1D *hisx = new TH1D("his1", "posx", 60, -15, 15);
+  TH1D *hisy = new TH1D("his2", "posy", 60, -15, 15);
+  TH2D *hisxy = new TH2D("his3", "posxy", 50, -5, 5, 50, -5, 5);
+  TH2D *histr = new TH2D("his4", "postr", 50, -5, 5, 50, -5, 5);
+  hisx->SetDirectory(nullptr);
+  hisy->SetDirectory(nullptr);
+  hisxy->SetDirectory(nullptr);
+  histr->SetDirectory(nullptr);
+
+  TFile *InfileTrack = new TFile(trackfile.data(), "READ");
+  TTree *TrTrack = (TTree *)InfileTrack->Get("Track");
+  int trackID;
+  double trackPos[3];
+  TrTrack->SetBranchAddress("event", &trackID);
+  TrTrack->SetBranchAddress("ecalextraHit", &trackPos);
+  for (int i = 0; i < std::min(TrECAL->GetEntries(), TrTrack->GetEntries()); i++)
+  {
+    TrECAL->GetEntry(i);
+    TrTrack->GetEntry(i);
+    if (ShowerX->size() != 1 || triggerID != trackID || SeedID->at(0) != 326034)
+      continue;
+    hisx->Fill(ShowerX->at(0) - trackPos[0] / 10);
+    hisy->Fill(ShowerY->at(0) + trackPos[1] / 10);
+    hisxy->Fill(ShowerX->at(0) - trackPos[0] / 10, ShowerY->at(0) + trackPos[1] / 10);
+    histr->Fill(trackPos[0] / 10, -trackPos[1] / 10);
+  }
+  TCanvas *can1 = new TCanvas();
+  hisx->Draw();
+  TCanvas *can2 = new TCanvas();
+  hisy->Draw();
+  TCanvas *can3 = new TCanvas();
+  hisxy->Draw("colz");
+  TCanvas *can4 = new TCanvas();
+  histr->Draw("colz");
+  InfileECAL->Close();
+  InfileTrack->Close();
+}
+
 void DrawPosEnergy(string rootfile, double energy = 1000)
 {
 
@@ -160,8 +217,6 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
     return;
   }
 
-  string energy_str = to_string(int(energy)) + "MeV";
-
   TChain *t = new TChain("rec_data");
   for (unsigned int i = 0; i < rootlist.size(); i++)
   {
@@ -171,12 +226,16 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
 
   vector<int> *SeedID = 0;
   vector<int> *HitID = 0;
+  vector<double> *Energy_3x3 = 0;
   vector<double> *Energy_5x5 = 0;
+  vector<double> *Energy_EAll = 0;
   vector<double> *Energy_Hit = 0;
   vector<double> *ShowerX = 0;
   vector<double> *ShowerY = 0;
   t->SetBranchAddress("ShowerID", &SeedID);
+  t->SetBranchAddress("ShowerE3x3", &Energy_3x3);
   t->SetBranchAddress("ShowerE5x5", &Energy_5x5);
+  t->SetBranchAddress("ShowerEAll", &Energy_EAll);
   t->SetBranchAddress("HitID", &HitID);
   t->SetBranchAddress("HitEnergy", &Energy_Hit);
   t->SetBranchAddress("ShowerPosX5x5", &ShowerX);
@@ -185,13 +244,36 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
   TH2F *hpos = new TH2F("hpos", "Shower Position", 50, -5, 5, 50, 5, 5);
   TH1F *hposx = new TH1F("hposx", "Shower X Position", 100, -12.5, 12.5);
   TH1F *hposy = new TH1F("hposy", "Shower Y Position", 100, -12.5, 12.5);
-
+  // determine electron beam energy
+  TH1F *energy_test = new TH1F("energy", "energy", 1000, 0, 10000);
+  double maxenergy = 0, maxheight = 0;
+  for (int i = 0; i < t->GetEntries(); i++)
+  {
+    t->GetEntry(i);
+    for (size_t j = 0; j < Energy_EAll->size(); j++)
+    {
+      energy_test->Fill(Energy_EAll->at(j));
+      if ((Energy_EAll->at(j) > maxenergy) && (energy_test->GetBinContent(static_cast<int>(Energy_EAll->at(j) / energy_test->GetBinWidth(0))) > 50))
+        maxenergy = Energy_EAll->at(j);
+    }
+  }
+  int startbin = 0, maxbin = 0;
+  startbin = maxenergy / 2 / 10;
+  for (int i = startbin; i < energy_test->GetNbinsX(); i++)
+  {
+    if (energy_test->GetBinContent(i) > maxheight)
+    {
+      maxheight = energy_test->GetBinContent(i);
+      maxbin = i;
+    }
+  }
+  energy = maxbin * energy_test->GetBinWidth(0);
+  string energy_str = to_string(int(energy)) + "MeV";
   double low = 0.5 * energy / 1000;
-  // double high = 1.05*energy/1000;
   double high = 1.2 * energy / 1000;
   double seedcut = 0.2 * energy / 1000;
-  TH1F *henergy_ecal = new TH1F("henergy_ecal", "ECAL Energy Distribution", 100, low, high);
-  double perbin = (high - low) / 100.0;
+  TH1F *henergy_ecal = new TH1F("henergy_ecal", "ECAL Energy Distribution", 200, low, high);
+  double perbin = (high - low) / 200.0;
   cout << t->GetEntries() << " entries in total." << endl;
   for (int i = 0; i < t->GetEntries(); i++)
   {
@@ -214,14 +296,17 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
             hitnum++;
           }
         }
-        // cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
+       
         if (seed_energy < seedcut)
           continue;
         if (hitnum < 2)
           continue;
         // select those events hitting the central area
-        if (!(ShowerX->at(j) > -1 && ShowerX->at(j) < 1 && ShowerY->at(j) < 1 && ShowerY->at(j) > -1))
+        int poslimit = 2;
+        if (!(ShowerX->at(j) > -poslimit && ShowerX->at(j) < poslimit && ShowerY->at(j) < poslimit && ShowerY->at(j) > -poslimit))
           continue;
+
+        // henergy_ecal->Fill(Energy_3x3->at(j) / 1000);
         henergy_ecal->Fill(Energy_5x5->at(j) / 1000);
         hpos->Fill(ShowerX->at(j), ShowerY->at(j));
         hposx->Fill(ShowerX->at(j));
