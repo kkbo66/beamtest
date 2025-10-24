@@ -133,7 +133,7 @@ void drawtrackfitshower(string rootfile, double energy){
   vector<double> posY;
   posX.clear();
   posY.clear();
-  TFile *ftracker = TFile::Open("/home/kkbo/beamtest/root/tracker/Tracker-step4-rec.root");
+  TFile *ftracker = TFile::Open("/home/kkbo/beamtest/root/tracker/Tracker-step4-rec-26.root");
   TTree *ttracker = (TTree*)ftracker->Get("Track");
   int trkeventid;
   Double_t trkpos[3];
@@ -180,11 +180,16 @@ void drawtrackfitshower(string rootfile, double energy){
     for(unsigned int j=0;j<SeedID->size();j++){
       if(SeedID->at(j)==326034){ // center crystal ID for ECAL
         double seed_energy = -1;
+        int hitnum = 0;
         for(unsigned int k=0;k<HitID->size();k++){
           if(HitID->at(k)==326034){
             seed_energy = Energy_Hit->at(k)/1000;
-            break;
+            //break;
           }        
+          else if (Energy_Hit->at(k) > 3)
+          {
+            hitnum++;
+          }
         }
         //cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
         int new_eventid = eventid;
@@ -192,8 +197,9 @@ void drawtrackfitshower(string rootfile, double energy){
         double r_track = Sqrt(posX[new_eventid]*posX[new_eventid]+posY[new_eventid]*posY[new_eventid]);
         if(r_track<0.0000000001) continue;
         //if(abs(posX[new_eventid])>1 || abs(posY[new_eventid])>1) continue;
-        //if(posX[new_eventid]>-1 || posX[new_eventid]<-2 || posY[new_eventid]>0.5 || posY[new_eventid]<-0.5) continue;
+        if(posX[new_eventid]>1.5 || posX[new_eventid]<-1.5 || posY[new_eventid]>1.5 || posY[new_eventid]<-1.5) continue;
         if(seed_energy<seedcut) continue;
+        if (hitnum < 2) continue;
         //if(!(ShowerX->at(j)>-3 && ShowerX->at(j)<0 && ShowerY->at(j)<1.5 && ShowerY->at(j)>-1.5)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j)/1000);
       }

@@ -14,6 +14,7 @@
 #include <TString.h>
 #include <TFitResultPtr.h>
 #include <TFitResult.h>
+#include <TStyle.h>
 
 using namespace std;
 using namespace TMath;

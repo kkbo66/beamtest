@@ -15,7 +15,7 @@ Vdouble DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double perbin)
   Vout.clear();
   for (int i = 0; i < 16; i++)
   {
-    double a = 0.98 + 0.01 * double(i + 1);
+    double a = 0.99 + 0.01 * double(i + 1);
     for (int j = 0; j < 16; j++)
     {
       double b = 0.030 + 0.0001 * double(j);
@@ -115,7 +115,7 @@ Vdouble DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double perbin)
   return Vout;
 }
 
-void drawfitshower(string rootfile, double energy)
+void drawshower(string rootfile, double energy)
 {
 
   gStyle->SetOptStat(0);
@@ -157,11 +157,16 @@ void drawfitshower(string rootfile, double energy)
   vector<double> *ShowerX = 0;
   vector<double> *ShowerY = 0;
   t->SetBranchAddress("ShowerID", &SeedID);
-  t->SetBranchAddress("ShowerE3x3", &Energy_5x5);
+  t->SetBranchAddress("ShowerE5x5", &Energy_5x5);
   t->SetBranchAddress("HitID", &HitID);
   t->SetBranchAddress("HitEnergy", &Energy_Hit);
   t->SetBranchAddress("ShowerPosX5x5", &ShowerX);
   t->SetBranchAddress("ShowerPosY5x5", &ShowerY);
+
+  //TH2F *hpos = new TH2F("hpos", "Shower Position", 100, -5, 5, 100, -5, 5);
+  TH2F *hpos = new TH2F("hpos", "Shower Position", 100, -12.5, 12.5, 100, -12.5, 12.5);
+  TH1F *hposx = new TH1F("hposx", "Shower X Position", 100, -12.5, 12.5);
+  TH1F *hposy = new TH1F("hposy", "Shower Y Position", 100, -12.5, 12.5);
 
   double low = 0.5 * energy / 1000;
   // double high = 1.05*energy/1000;
@@ -172,6 +177,7 @@ void drawfitshower(string rootfile, double energy)
   cout << t->GetEntries() << " entries in total." << endl;
   for (int i = 0; i < t->GetEntries(); i++)
   {
+    //if(i<4000) continue;
     t->GetEntry(i);
     for (unsigned int j = 0; j < SeedID->size(); j++)
     {
@@ -186,7 +192,7 @@ void drawfitshower(string rootfile, double energy)
             seed_energy = Energy_Hit->at(k) / 1000;
             // break;
           }
-          else if (Energy_Hit->at(k) > 3)
+          else if (Energy_Hit->at(k) > 10)
           {
             hitnum++;
           }
@@ -194,13 +200,62 @@ void drawfitshower(string rootfile, double energy)
         // cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
         if (seed_energy < seedcut)
           continue;
-        if (hitnum < 3)
+        if (hitnum < 5)
           continue;
         // if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j) / 1000);
+        hpos->Fill(ShowerX->at(j), ShowerY->at(j));
+        hposx->Fill(ShowerX->at(j));
+        hposy->Fill(ShowerY->at(j));
       }
     }
   }
+
+  TString pos_name = "c_pos_" + energy_str;
+  TCanvas *c_pos = new TCanvas(pos_name, pos_name, 800, 600);
+  c_pos->cd();
+  gPad->SetGrid();
+  hpos->SetXTitle("Shower X Position (cm)");
+  hpos->SetYTitle("Shower Y Position (cm)");
+  hpos->GetXaxis()->SetLabelSize(0.05);
+  hpos->GetXaxis()->SetTitleSize(0.05);
+  hpos->GetYaxis()->SetLabelSize(0.05);
+  hpos->GetYaxis()->SetTitleSize(0.05);
+  hpos->GetXaxis()->SetTitleOffset(0.9);
+  hpos->GetYaxis()->SetTitleOffset(0.9);
+  hpos->SetLineColor(kBlue);
+  hpos->SetLineWidth(2);
+  hpos->Draw("colz");
+  TString posx_name = "c_posx_" + energy_str;
+  TCanvas *c_posx = new TCanvas(posx_name, posx_name, 800, 600);
+  c_posx->cd();
+  gPad->SetGrid();
+  hposx->SetXTitle("Shower X Position (cm)");
+  hposx->SetYTitle("Entries");
+  hposx->GetXaxis()->SetLabelSize(0.05);
+  hposx->GetXaxis()->SetTitleSize(0.05);
+  hposx->GetYaxis()->SetLabelSize(0.05);
+  hposx->GetYaxis()->SetTitleSize(0.05);
+  hposx->GetXaxis()->SetTitleOffset(0.9);
+  hposx->GetYaxis()->SetTitleOffset(0.9);
+  hposx->SetLineColor(kBlue);
+  hposx->SetLineWidth(2);
+  hposx->Draw("hist");
+  TString posy_name = "c_posy_" + energy_str;
+  TCanvas *c_posy = new TCanvas(posy_name, posy_name, 800, 600);
+  c_posy->cd();
+  gPad->SetGrid();
+  hposy->SetXTitle("Shower Y Position (cm)");
+  hposy->SetYTitle("Entries");
+  hposy->GetXaxis()->SetLabelSize(0.05);
+  hposy->GetXaxis()->SetTitleSize(0.05);
+  hposy->GetYaxis()->SetLabelSize(0.05);
+  hposy->GetYaxis()->SetTitleSize(0.05);
+  hposy->GetXaxis()->SetTitleOffset(0.9);
+  hposy->GetYaxis()->SetTitleOffset(0.9);
+  hposy->SetLineColor(kBlue);
+  hposy->SetLineWidth(2);
+  hposy->Draw("hist");
 
   TString canvas_name = "c_" + energy_str;
   TCanvas *c = new TCanvas(canvas_name, canvas_name, 800, 600);

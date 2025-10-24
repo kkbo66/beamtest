@@ -29,7 +29,7 @@ void drawdiffpos(string rootfile, double energy){
   vector<double> posY;
   posX.clear();
   posY.clear();
-  TFile *ftracker = TFile::Open("/home/kkbo/beamtest/root/tracker/Tracker-step4-rec.root");
+  TFile *ftracker = TFile::Open("/home/kkbo/beamtest/root/tracker/Tracker-step4-rec-26.root");
   TTree *ttracker = (TTree*)ftracker->Get("Track");
   int trkeventid;
   Double_t trkpos[3];
@@ -79,7 +79,7 @@ void drawdiffpos(string rootfile, double energy){
       //if(abs(ShowerX->at(j))>1 || abs(ShowerY->at(j))>1) continue;
       if(r_tracker>0){
         double dx = ShowerX->at(j) - posX[new_eventid];
-        double dy = ShowerY->at(j) - posY[new_eventid];
+        double dy = ShowerY->at(j) + posY[new_eventid];
         hpos->Fill(dx,dy);
         hposX->Fill(dx);
         hposY->Fill(dy);

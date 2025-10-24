@@ -30,7 +30,7 @@ for file in /home/kkbo/beamtest/data/$DATE/data*ECAL*.dat
 do
   DATAFILE=$file
   DATAFILENAME=$(basename $DATAFILE)
-  ROOTNAME=${DATAFILENAME/.dat/.root}
+  ROOTNAME=${DATAFILENAME/.dat/_decode.root}
   echo "Processing File: $DATAFILE"
   echo "Output Root File: $ROOTNAME"
   ./ECALdig2root2025 $DATAFILE $ROOTNAME
@@ -42,10 +42,13 @@ do
   ./ECALDigi /home/kkbo/beamtest/root/$DATE/$ROOTNAME $DIGIROOTNAME
   mv $DIGIROOTNAME /home/kkbo/beamtest/root/$DATE
   RECONROOTNAME=${DATAFILENAME/.dat/_recon.root}
+  RECONROOTNAME2=${DATAFILENAME/.dat/_recon2.root}
   echo "Reconstructed Root File: $RECONROOTNAME"
   echo "Running Reconstruction..."
   ./Reconstruction /home/kkbo/beamtest/root/$DATE/$DIGIROOTNAME $RECONROOTNAME
+  ./multiReconstruction /home/kkbo/beamtest/root/$DATE/$ROOTNAME $RECONROOTNAME2
   mv $RECONROOTNAME /home/kkbo/beamtest/root/$DATE
+  mv $RECONROOTNAME2 /home/kkbo/beamtest/root/$DATE
   echo "Done!"
 done
 
