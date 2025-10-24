@@ -1,0 +1,12 @@
+Energy: 800 MeV, Entry Number: 1665
+Energy: 1000 MeV, Entry Number: 6587
+Energy: 1500 MeV, Entry Number: 18719
+Energy: 2000 MeV, Entry Number: 877
+Energy: 2500 MeV, Entry Number: 144
+Energy: 3000 MeV, Entry Number: 88
+Energy: 3500 MeV, Entry Number: 56
+Energy: 800 MeV, Entry Number: 6663
+Energy: 1000 MeV, Entry Number: 17157
+Energy: 1500 MeV, Entry Number: 27775
+Energy: 2000 MeV, Entry Number: 1080
+Energy: 800 MeV, Entry Number: 6663

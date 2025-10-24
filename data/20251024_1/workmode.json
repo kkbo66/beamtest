@@ -1,0 +1,20 @@
+{
+    "subsys": [
+        {
+            "subsys": "DAQ",
+            "version": "1.1",
+            "info": "ECAL reduce"
+        },
+        {
+            "subsys": "ECAL",
+            "version": "2.0",
+            "info": "normal"
+        },
+        {
+            "subsys": "TRIG",
+            "version": "1.0",
+            "info": "self trig"
+        }
+    ],
+    "work_mode": "default"
+}

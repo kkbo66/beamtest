@@ -110,7 +110,7 @@ void draw5x5(int num = 100000){
   }
   TCanvas *c[num];
   TCanvas *c2[num];
-  for(Int_t i=700; i<t->GetEntries(); i++){
+  for(Int_t i=0; i<t->GetEntries(); i++){
     if(i>=num) break;
     t->GetEntry(i);
     c[i] = new TCanvas(Form("c_%d", i), Form("c_%d", i), 800, 600); 

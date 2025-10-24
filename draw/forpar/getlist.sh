@@ -23,7 +23,7 @@ TXTNAME=$2
 FILEPATH="/home/kkbo/beamtest/root/"
 TXTPATH="./"
 file_recreate ${TXTPATH}${TXTNAME}.txt
-for file in `ls ${FILEPATH}${DATE}/*root`
+for file in `ls ${FILEPATH}${DATE}/*_decode.root`
 do
   echo $file >> ${TXTPATH}${TXTNAME}.txt
 done

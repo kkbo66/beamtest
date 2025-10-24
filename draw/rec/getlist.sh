@@ -23,9 +23,14 @@ TXTNAME=$2
 FILEPATH="/home/kkbo/beamtest/root/"
 TXTPATH="./"
 file_recreate ${TXTPATH}${TXTNAME}.txt
+file_recreate ${TXTPATH}${TXTNAME}mode2.txt
 for file in `ls ${FILEPATH}${DATE}/*recon.root`
 do
   echo $file >> ${TXTPATH}${TXTNAME}.txt
 done
 
+for file in `ls ${FILEPATH}${DATE}/*recon2.root`
+do
+  echo $file >> ${TXTPATH}${TXTNAME}mode2.txt
+done
 

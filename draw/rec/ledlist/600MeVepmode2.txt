@@ -1,0 +1,5 @@
+/home/kkbo/beamtest/root/20251024_14/data*ECAL*_recon2.root /home/kkbo/beamtest/root/20251024_14/data_ECAL_20251024T082310_0_recon2.root /home/kkbo/beamtest/root/20251024_14/data_ECAL_20251024T084100_1_recon2.root
+/home/kkbo/beamtest/root/20251024_14/data_ECAL_20251024T082310_0_recon2.root
+/home/kkbo/beamtest/root/20251024_14/data_ECAL_20251024T084100_1_recon2.root
+/home/kkbo/beamtest/root/20251024_14/data_ECAL_20251024T082310_0_recon2.root
+/home/kkbo/beamtest/root/20251024_14/data_ECAL_20251024T084100_1_recon2.root

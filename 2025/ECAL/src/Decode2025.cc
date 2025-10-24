@@ -315,10 +315,10 @@ Decode2025::Decode2025(std::string filename) : mHit(25)
         leaf_list += ":HighGainPeak/D";
 
         mTree->Branch(name.data(), &mHit[i]->CrystalID, leaf_list.data());
-        mTree->Branch(Form("%s.TimeStamp", name.data()), &mHit[i]->TimeStamp, "TimeStamp/D");
-        mTree->Branch(Form("%s.CoarseTime", name.data()), &mHit[i]->CoarseTime);
-        mTree->Branch(Form("%s.FineTime", name.data()), &mHit[i]->FineTime);
-        mTree->Branch(Form("%s.Amplitude", name.data()), &mHit[i]->Amplitude);
+        mTree->Branch(Form("%s_TimeStamp", name.data()), &mHit[i]->TimeStamp, "TimeStamp/D");
+        mTree->Branch(Form("%s_CoarseTime", name.data()), &mHit[i]->CoarseTime);
+        mTree->Branch(Form("%s_FineTime", name.data()), &mHit[i]->FineTime);
+        mTree->Branch(Form("%s_Amplitude", name.data()), &mHit[i]->Amplitude);
     }
 
     mEventID = mTriggerID = mTimeCode = 0;

@@ -89,10 +89,10 @@ int main(int argc, char const *argv[])
   for (int i = 0; i < 25; i++)
   {
     string name = "Hit_" + Name[i];
-    string timeName = name + ".TimeStamp";
-    string coarseName = name + ".CoarseTime";
-    string fineName = name + ".FineTime";
-    string ampName = name + ".Amplitude";
+    string timeName = name + "_TimeStamp";
+    string coarseName = name + "_CoarseTime";
+    string fineName = name + "_FineTime";
+    string ampName = name + "_Amplitude";
     tree->SetBranchAddress(name.data(), Hit[i]);
     tree->SetBranchAddress(timeName.data(), &TimeStamp[i]);
     tree->SetBranchAddress(coarseName.data(), &CoarseTime[i]);
@@ -380,7 +380,7 @@ int main(int argc, char const *argv[])
           double fineTime = FineTime[i]->at(j);
           double amp = Amplitude[i]->at(j);
           double time = coarseTime - timestamp;
-          if (time > 450 && time < 550 && amp > maxAmp)
+          if (time > 400 && time < 500 && amp > maxAmp)
           {
             maxAmp = amp;
             index = j;
