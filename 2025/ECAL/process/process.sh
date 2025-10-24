@@ -9,7 +9,7 @@ para_num $@
 
 # 输入参数1: DAQ服务器中的数据文件夹路径
 # 输入参数2：拷贝的文件数目
-# 输入参数3：电子束流能量
+# 输入参数3：电子束流能量(not necessary)
 DATAFILEPATH=$1
 FILENUMBER=$2
 ENERGYCUT=$3
