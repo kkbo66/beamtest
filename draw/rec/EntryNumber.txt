@@ -10,3 +10,17 @@ Energy: 300 MeV, Entry Number: 3028
 Energy: 400 MeV, Entry Number: 9612
 Energy: 500 MeV, Entry Number: 4199
 Energy: 600 MeV, Entry Number: 2895
+
+
+Energy: 200 MeV, Entry Number: 597
+Energy: 300 MeV, Entry Number: 3510
+Energy: 400 MeV, Entry Number: 9612
+Energy: 500 MeV, Entry Number: 4230
+Energy: 600 MeV, Entry Number: 3264
+Energy: 800 MeV, Entry Number: 1741
+Energy: 1000 MeV, Entry Number: 5222
+Energy: 1500 MeV, Entry Number: 6522
+Energy: 2000 MeV, Entry Number: 5184
+Energy: 2500 MeV, Entry Number: 31039
+Energy: 3000 MeV, Entry Number: 48323
+Energy: 3500 MeV, Entry Number: 43610

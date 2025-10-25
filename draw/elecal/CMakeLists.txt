@@ -20,3 +20,6 @@ target_link_libraries(drawCal ${ROOT_LIBRARIES})
 add_executable(drawPeak "drawPeak.cxx")
 target_link_libraries(drawPeak ${ROOT_LIBRARIES})
 
+add_executable(drawledPeak "drawledPeak.cxx")
+target_link_libraries(drawledPeak ${ROOT_LIBRARIES})
+

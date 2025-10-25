@@ -115,7 +115,7 @@ Vdouble DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double perbin)
   return Vout;
 }
 
-void drawfitshower(string rootfile, double energy)
+void drawfitshower(string rootfile, double energy, double hitcut = 3.0, int hitnumcut = 2, TString type = "5x5", double seedEratio = 0.2)
 {
 
   gStyle->SetOptStat(0);
@@ -157,7 +157,10 @@ void drawfitshower(string rootfile, double energy)
   vector<double> *ShowerX = 0;
   vector<double> *ShowerY = 0;
   t->SetBranchAddress("ShowerID", &SeedID);
-  t->SetBranchAddress("ShowerE3x3", &Energy_5x5);
+  if (type == "3x3")
+    t->SetBranchAddress("ShowerE3x3", &Energy_5x5);
+  else if (type == "5x5")
+    t->SetBranchAddress("ShowerE5x5", &Energy_5x5);
   t->SetBranchAddress("HitID", &HitID);
   t->SetBranchAddress("HitEnergy", &Energy_Hit);
   t->SetBranchAddress("ShowerPosX5x5", &ShowerX);
@@ -166,7 +169,7 @@ void drawfitshower(string rootfile, double energy)
   double low = 0.5 * energy / 1000;
   // double high = 1.05*energy/1000;
   double high = 1.2 * energy / 1000;
-  double seedcut = 0.2 * energy / 1000;
+  double seedcut = energy / 1000 * seedEratio;
   TH1F *henergy_ecal = new TH1F("henergy_ecal", "ECAL Energy Distribution", 100, low, high);
   double perbin = (high - low) / 100.0;
   cout << t->GetEntries() << " entries in total." << endl;
@@ -186,7 +189,7 @@ void drawfitshower(string rootfile, double energy)
             seed_energy = Energy_Hit->at(k) / 1000;
             // break;
           }
-          else if (Energy_Hit->at(k) > 3)
+          else if (Energy_Hit->at(k) > hitcut)
           {
             hitnum++;
           }
@@ -194,7 +197,7 @@ void drawfitshower(string rootfile, double energy)
         // cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
         if (seed_energy < seedcut)
           continue;
-        if (hitnum < 3)
+        if (hitnum < hitnumcut)
           continue;
         // if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j) / 1000);

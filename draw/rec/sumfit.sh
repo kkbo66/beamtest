@@ -9,9 +9,6 @@ para_num $@
 part=$1
 mode=$2
 if [ ${part} -eq 1 ]; then
-  ./fit.sh 20 ${mode}
-  ./fit.sh 50 ${mode}
-  ./fit.sh 100 ${mode}
   ./fit.sh 200 ${mode}
   ./fit.sh 300 ${mode}
   ./fit.sh 400 ${mode}

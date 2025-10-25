@@ -12,6 +12,7 @@
 #include "Parameter.hh"
 #include "SeedFinder.hh"
 #include "Cluster2Shower.hh"
+#include "ClusterSplitter.hh"
 #include <TFile.h>
 #include <TProfile.h>
 #include <TTree.h>
@@ -96,7 +97,10 @@ int main(int argc, char const *argv[])
   TFile *f = new TFile(outputfile.Data(), "recreate");
 
   bool IsFitAmp = false;
+  int rec_mode = 0;
   if (argc == 4)
+    rec_mode = atoi(argv[3]);
+  if (rec_mode % 2 == 1)
     IsFitAmp = true;
 
   int triggerID;
@@ -197,115 +201,245 @@ int main(int argc, char const *argv[])
     ShowerA20Moment.clear();
     ShowerA42Moment.clear();
 
-    vector<int> SeedIDVec;
-    map<int, RecHit> HitMap;
-    map<int, Cluster> ClusterMap;
-    map<int, Shower> ShowerMap;
 
-    map<int, RecHit>::iterator Hiter;
-    map<int, Cluster>::iterator Citer;
-    map<int, Shower>::iterator Siter;
+    if(rec_mode==0 || rec_mode==1) {
+      vector<int> SeedIDVec;
+      map<int, RecHit> HitMap;
+      map<int, Cluster> ClusterMap;
+      map<int, Shower> ShowerMap;
 
-    SeedIDVec.clear();
-    HitMap.clear();
-    ClusterMap.clear();
-    ShowerMap.clear();
+      map<int, RecHit>::iterator Hiter;
+      map<int, Cluster>::iterator Citer;
+      map<int, Shower>::iterator Siter;
 
-    for (int i = 0; i < 25; i++)
-    {
-      RecHit rechit;
-      rechit.Clear();
-      rechit.setCrystalID(CrystalID->at(i));
-      rechit.setFrontCenter(TVector3(Para.HitPosX(CrystalID->at(i)), Para.HitPosY(CrystalID->at(i)), Para.HitPosZ(CrystalID->at(i))));
-      if (IsFitAmp)
-        rechit.setEnergy(AmpHG_Fit->at(i), AmpLG_Fit->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i));
-      else
-        rechit.setEnergy(AmpHG_Peak->at(i), AmpLG_Peak->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGPedestal(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i), r1);
-      rechit.setTime(TimeHG->at(i), TimeLG->at(i), AmpHG_Peak->at(i), Para.LGPedestal(i), Para.HGSatuPoint(i));
+      SeedIDVec.clear();
+      HitMap.clear();
+      ClusterMap.clear();
+      ShowerMap.clear();
 
-      if (rechit.Energy() > 0)
+      for (int i = 0; i < 25; i++)
       {
-        HitMap[CrystalID->at(i)] = rechit;
-        HitID.push_back(rechit.CrystalID());
-        HitTime.push_back(rechit.Time());
-        HitEnergy.push_back(rechit.Energy());
-      }
-    }
-
-    Hit2Cluster m_Hit2Cluster;
-    m_Hit2Cluster.Convert(HitMap, ClusterMap);
-    Cluster2Shower m_Cluster2Shower;
-    m_Cluster2Shower.Convert(ClusterMap, ShowerMap);
-
-    /*SeedFinder m_SeedFinder;
-      Citer=ClusterMap.begin();
-      m_SeedFinder.Seed(Citer->second,SeedIDVec);
-      for(int i=0;i<SeedIDVec.size();i++) cout<<"Seed:"<<SeedIDVec.at(i)<<endl;*/
-
-    double epsilon = 1e-10;
-    for (Citer = ClusterMap.begin(); Citer != ClusterMap.end(); Citer++)
-    {
-      // Calculate cluster position
-      TVector3 possum;
-      double etot = 0;
-      for (auto it = Citer->second.Begin(); it != Citer->second.End(); ++it)
-      {
-        etot += it->second.Energy();
-        TVector3 pos(it->second.FrontCenter());
-        possum += pos * it->second.Energy();
-      }
-      if (etot > 0)
-        possum = possum * (1 / etot);
-      if (std::abs(possum.x() - (std::floor(possum.x() * 100000) / 100000)) < epsilon)
-        Citer->second.setPosition(TVector3(std::floor(possum.x() * 100000) / 100000, std::floor(possum.y() * 100000) / 100000, std::floor(possum.z() * 100000) / 100000));
-      else
-        Citer->second.setPosition(possum);
-
-      // Calculate cluster second moment
-      double sum = 0;
-      for (auto it = Citer->second.Begin(); it != Citer->second.End(); ++it)
-      {
-        TVector3 pos(it->second.FrontCenter());
-        if (std::abs((pos - possum).Mag2()) < epsilon)
-          sum += it->second.Energy() * 0;
-
+        RecHit rechit;
+        rechit.Clear();
+        rechit.setCrystalID(CrystalID->at(i));
+        rechit.setFrontCenter(TVector3(Para.HitPosX(CrystalID->at(i)), Para.HitPosY(CrystalID->at(i)), Para.HitPosZ(CrystalID->at(i))));
+        if (IsFitAmp)
+          rechit.setEnergy(AmpHG_Fit->at(i), AmpLG_Fit->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i));
         else
-          sum += it->second.Energy() * ((pos - possum).Mag2());
+          rechit.setEnergy(AmpHG_Peak->at(i), AmpLG_Peak->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGPedestal(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i), r1);
+        rechit.setTime(TimeHG->at(i), TimeLG->at(i), AmpHG_Peak->at(i), Para.LGPedestal(i), Para.HGSatuPoint(i));
+
+        if (rechit.Energy() > 0)
+        {
+          HitMap[CrystalID->at(i)] = rechit;
+          HitID.push_back(rechit.CrystalID());
+          HitTime.push_back(rechit.Time());
+          HitEnergy.push_back(rechit.Energy());
+        }
       }
-      if (etot > 0)
-        sum /= etot;
-      Citer->second.setSecondMoment(sum);
-    }
 
-    for (Citer = ClusterMap.begin(); Citer != ClusterMap.end(); Citer++)
-    {
-      ClusterID.push_back(Citer->second.GetClusterID());
-      ClusterSize.push_back(Citer->second.GetClusterSize());
-      ClusterEnergy.push_back(Citer->second.GetClusterEnergy());
-      ClusterSMoment.push_back(Citer->second.GetSecondMoment());
-      ClusterPosX.push_back(Citer->second.GetPosition().x());
-      ClusterPosY.push_back(Citer->second.GetPosition().y());
-      ClusterPosZ.push_back(Citer->second.GetPosition().z());
-    }
+      Hit2Cluster m_Hit2Cluster;
+      m_Hit2Cluster.Convert(HitMap, ClusterMap);
+      Cluster2Shower m_Cluster2Shower;
+      m_Cluster2Shower.Convert(ClusterMap, ShowerMap);
 
-    for (Siter = ShowerMap.begin(); Siter != ShowerMap.end(); Siter++)
-    {
-      ShowerID.push_back(Siter->second.SeedID());
-      ShowerE3x3.push_back(Siter->second.E3x3());
-      ShowerE5x5.push_back(Siter->second.E5x5());
-      ShowerEAll.push_back(Siter->second.EAll());
-      ShowerPosX3x3.push_back(Siter->second.x3x3());
-      ShowerPosY3x3.push_back(Siter->second.y3x3());
-      ShowerPosZ3x3.push_back(Siter->second.z3x3());
-      ShowerPosX5x5.push_back(Siter->second.x5x5());
-      ShowerPosY5x5.push_back(Siter->second.y5x5());
-      ShowerPosZ5x5.push_back(Siter->second.z5x5());
-      ShowerSMoment.push_back(Siter->second.SecondMoment());
-      ShowerLatMoment.push_back(Siter->second.LateralMoment());
-      ShowerA20Moment.push_back(Siter->second.A20Moment());
-      ShowerA42Moment.push_back(Siter->second.A42Moment());
-    }
+      /*SeedFinder m_SeedFinder;
+        Citer=ClusterMap.begin();
+        m_SeedFinder.Seed(Citer->second,SeedIDVec);
+        for(int i=0;i<SeedIDVec.size();i++) cout<<"Seed:"<<SeedIDVec.at(i)<<endl;*/
 
+      double epsilon = 1e-10;
+      for (Citer = ClusterMap.begin(); Citer != ClusterMap.end(); Citer++)
+      {
+        // Calculate cluster position
+        TVector3 possum;
+        double etot = 0;
+        for (auto it = Citer->second.Begin(); it != Citer->second.End(); ++it)
+        {
+          etot += it->second.Energy();
+          TVector3 pos(it->second.FrontCenter());
+          possum += pos * it->second.Energy();
+        }
+        if (etot > 0)
+          possum = possum * (1 / etot);
+        if (std::abs(possum.x() - (std::floor(possum.x() * 100000) / 100000)) < epsilon)
+          Citer->second.setPosition(TVector3(std::floor(possum.x() * 100000) / 100000, std::floor(possum.y() * 100000) / 100000, std::floor(possum.z() * 100000) / 100000));
+        else
+          Citer->second.setPosition(possum);
+
+        // Calculate cluster second moment
+        double sum = 0;
+        for (auto it = Citer->second.Begin(); it != Citer->second.End(); ++it)
+        {
+          TVector3 pos(it->second.FrontCenter());
+          if (std::abs((pos - possum).Mag2()) < epsilon)
+            sum += it->second.Energy() * 0;
+
+          else
+            sum += it->second.Energy() * ((pos - possum).Mag2());
+        }
+        if (etot > 0)
+          sum /= etot;
+        Citer->second.setSecondMoment(sum);
+      }
+
+      for (Citer = ClusterMap.begin(); Citer != ClusterMap.end(); Citer++)
+      {
+        ClusterID.push_back(Citer->second.GetClusterID());
+        ClusterSize.push_back(Citer->second.GetClusterSize());
+        ClusterEnergy.push_back(Citer->second.GetClusterEnergy());
+        ClusterSMoment.push_back(Citer->second.GetSecondMoment());
+        ClusterPosX.push_back(Citer->second.GetPosition().x());
+        ClusterPosY.push_back(Citer->second.GetPosition().y());
+        ClusterPosZ.push_back(Citer->second.GetPosition().z());
+      }
+
+      for (Siter = ShowerMap.begin(); Siter != ShowerMap.end(); Siter++)
+      {
+        ShowerID.push_back(Siter->second.SeedID());
+        ShowerE3x3.push_back(Siter->second.E3x3());
+        ShowerE5x5.push_back(Siter->second.E5x5());
+        ShowerEAll.push_back(Siter->second.EAll());
+        ShowerPosX3x3.push_back(Siter->second.x3x3());
+        ShowerPosY3x3.push_back(Siter->second.y3x3());
+        ShowerPosZ3x3.push_back(Siter->second.z3x3());
+        ShowerPosX5x5.push_back(Siter->second.x5x5());
+        ShowerPosY5x5.push_back(Siter->second.y5x5());
+        ShowerPosZ5x5.push_back(Siter->second.z5x5());
+        ShowerSMoment.push_back(Siter->second.SecondMoment());
+        ShowerLatMoment.push_back(Siter->second.LateralMoment());
+        ShowerA20Moment.push_back(Siter->second.A20Moment());
+        ShowerA42Moment.push_back(Siter->second.A42Moment());
+      }
+    }
+    else if(rec_mode==2 || rec_mode==3) {
+      vector<int> SeedIDVec;
+      map<int, RecHit> HitMap;
+      map<int, Cluster> ClusterMap;
+      map<int, Shower> ShowerMap;
+
+      map<int, RecHit>::iterator Hiter;
+      map<int, Cluster>::iterator Citer;
+      map<int, Shower>::iterator Siter;
+
+      SeedIDVec.clear();
+      HitMap.clear();
+      ClusterMap.clear();
+      ShowerMap.clear();
+
+      int maxCrystalID = -1;
+      int maxIndex = -1;
+      double maxEnergy = -1;
+      double totalEnergy = 0;
+      Cluster aCluster; 
+      for (int i = 0; i < 25; i++)
+      {
+        RecHit rechit;
+        rechit.Clear();
+        rechit.setCrystalID(CrystalID->at(i));
+        rechit.setFrontCenter(TVector3(Para.HitPosX(CrystalID->at(i)), Para.HitPosY(CrystalID->at(i)), Para.HitPosZ(CrystalID->at(i))));
+        if (IsFitAmp)
+          rechit.setEnergy(AmpHG_Fit->at(i), AmpLG_Fit->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i));
+        else
+          rechit.setEnergy(AmpHG_Peak->at(i), AmpLG_Peak->at(i), Para.Ratio(i), Para.HGSatuPoint(i), Para.HGPedestal(i), Para.HGNoise(i), Para.LGPedestal(i), Para.LGNoise(i), Para.LGMipPeak(i), Para.HGMipPeak(i), r1);
+        rechit.setTime(TimeHG->at(i), TimeLG->at(i), AmpHG_Peak->at(i), Para.LGPedestal(i), Para.HGSatuPoint(i));
+
+        if (rechit.Energy() > 0)
+        {
+          HitID.push_back(rechit.CrystalID());
+          HitTime.push_back(rechit.Time());
+          HitEnergy.push_back(rechit.Energy());
+          aCluster.Insert(rechit.CrystalID(), rechit);
+          totalEnergy += rechit.Energy();
+          if (rechit.Energy() > maxEnergy)
+          {
+            maxEnergy = rechit.Energy();
+            maxCrystalID = rechit.CrystalID();
+            maxIndex = i;
+          }
+        }
+      }
+      aCluster.setClusterID(maxCrystalID);
+      aCluster.setEnergy(totalEnergy);
+      ClusterMap.insert({maxCrystalID, aCluster});
+      SeedIDVec.push_back(maxCrystalID);
+      if (totalEnergy < Para.EThresholdCluster())
+        continue;
+      if (HitEnergy[maxIndex] < Para.EThresholdSeed())
+        continue;
+
+      ClusterSplitter m_ClusterSplitter;
+      m_ClusterSplitter.Split(aCluster, SeedIDVec, ShowerMap);
+
+      double epsilon = 1e-10;
+      for (Citer = ClusterMap.begin(); Citer != ClusterMap.end(); Citer++)
+      {
+        // Calculate cluster position
+        TVector3 possum;
+        double etot = 0;
+        for (auto it = Citer->second.Begin(); it != Citer->second.End(); ++it)
+        {
+          etot += it->second.Energy();
+          TVector3 pos(it->second.FrontCenter());
+          possum += pos * it->second.Energy();
+        }
+        if (etot > 0)
+          possum = possum * (1 / etot);
+        if (std::abs(possum.x() - (std::floor(possum.x() * 100000) / 100000)) < epsilon)
+          Citer->second.setPosition(TVector3(std::floor(possum.x() * 100000) / 100000, std::floor(possum.y() * 100000) / 100000, std::floor(possum.z() * 100000) / 100000));
+        else
+          Citer->second.setPosition(possum);
+
+        // Calculate cluster second moment
+        double sum = 0;
+        for (auto it = Citer->second.Begin(); it != Citer->second.End(); ++it)
+        {
+          TVector3 pos(it->second.FrontCenter());
+          if (std::abs((pos - possum).Mag2()) < epsilon)
+            sum += it->second.Energy() * 0;
+
+          else
+            sum += it->second.Energy() * ((pos - possum).Mag2());
+        }
+        if (etot > 0)
+          sum /= etot;
+        Citer->second.setSecondMoment(sum);
+      }
+
+      for (Citer = ClusterMap.begin(); Citer != ClusterMap.end(); Citer++)
+      {
+        ClusterID.push_back(Citer->second.GetClusterID());
+        ClusterSize.push_back(Citer->second.GetClusterSize());
+        ClusterEnergy.push_back(Citer->second.GetClusterEnergy());
+        ClusterSMoment.push_back(Citer->second.GetSecondMoment());
+        ClusterPosX.push_back(Citer->second.GetPosition().x());
+        ClusterPosY.push_back(Citer->second.GetPosition().y());
+        ClusterPosZ.push_back(Citer->second.GetPosition().z());
+      }
+
+      for (Siter = ShowerMap.begin(); Siter != ShowerMap.end(); Siter++)
+      {
+        ShowerID.push_back(Siter->second.SeedID());
+        ShowerE3x3.push_back(Siter->second.E3x3());
+        ShowerE5x5.push_back(Siter->second.E5x5());
+        ShowerEAll.push_back(Siter->second.EAll());
+        ShowerPosX3x3.push_back(Siter->second.x3x3());
+        ShowerPosY3x3.push_back(Siter->second.y3x3());
+        ShowerPosZ3x3.push_back(Siter->second.z3x3());
+        ShowerPosX5x5.push_back(Siter->second.x5x5());
+        ShowerPosY5x5.push_back(Siter->second.y5x5());
+        ShowerPosZ5x5.push_back(Siter->second.z5x5());
+        ShowerSMoment.push_back(Siter->second.SecondMoment());
+        ShowerLatMoment.push_back(Siter->second.LateralMoment());
+        ShowerA20Moment.push_back(Siter->second.A20Moment());
+        ShowerA42Moment.push_back(Siter->second.A42Moment());
+      }
+
+    }
+    else {
+      cout<<"Error: undefined reconstruction mode!"<<endl;
+      return -1;
+    }
     rec_data->Fill();
   }
 
