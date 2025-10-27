@@ -58,6 +58,13 @@ void getparforrec(){
     fout4 << pedl[i] << "\t" << nosl[i] << "\t" << nosl[i] << "\t"
           << pedh[i] << "\t" << nosh[i] << "\t" << nosh[i] << endl;
   }
-  fout.close(); fout2.close(); fout3.close(); fout4.close();
+  ofstream fout5("LightYield.dat");
+  for(int i=0; i< mipl.size(); i++){
+    double ly = mipl[i]/14.5/50.0/180.0/(1.6e-4)*hlratio[i];
+    double hy = miph[i]/14.5/50.0/180.0/(1.6e-4);
+    fout5 << hy << "\t" << ly << endl;
+  }
+
+  fout.close(); fout2.close(); fout3.close(); fout4.close(); fout5.close();
 
 }

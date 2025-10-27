@@ -95,7 +95,8 @@ void draw5x5(int num = 100000){
   
   gROOT->SetBatch(kTRUE);
 
-  TFile *f = new TFile("/home/kkbo/beamtest/root/re.root");
+  //TFile *f = new TFile("/home/kkbo/beamtest/root/re.root");
+  TFile *f = new TFile("/home/kkbo/beamtest/root/20251024_26/data_ECAL_20251024T145828_0_decode.root");
   TTree *t = (TTree*)f->Get("decode_data");
 
   const int n = 256;
@@ -126,7 +127,7 @@ void draw5x5(int num = 100000){
       gl[j]->SetLineWidth(2);
       gl[j]->GetXaxis()->SetTitle("Time (ns)");
       gl[j]->GetYaxis()->SetTitle("ADC");
-      c[i]->cd(j+1);
+      c[i]->cd(21+j/5-5*(j%5));
       gl[j]->Draw("AL");
       TLegend *leg = new TLegend(0.7, 0.7,  0.9, 0.9);
       leg->SetFillColor(0);
@@ -149,7 +150,7 @@ void draw5x5(int num = 100000){
       gh[j]->SetLineWidth(2);
       gh[j]->GetXaxis()->SetTitle("Time (ns)");
       gh[j]->GetYaxis()->SetTitle("ADC");
-      c2[i]->cd(j+1);
+      c2[i]->cd(21+j/5-5*(j%5));
       gh[j]->Draw("AL");
       TLegend *leg2 = new TLegend(0.7, 0.7, 0.9, 0.9);
       leg2->SetFillColor(0);

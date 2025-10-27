@@ -60,8 +60,9 @@ void drawhlratio(){
     t1->GetEntry(entry);
     for(Int_t i=0; i<5; i++){
       for(Int_t j=0; j<5; j++){
-        if(vLowGainMIP[i][j]>0 && vHighGainMIP[i][j]>0)
-        ghl[i][j]->SetPoint(entry, vLowGainMIP[i][j], vHighGainMIP[i][j]);
+        if(vLowGainMIP[i][j]>0 && vHighGainMIP[i][j]>0){
+          ghl[i][j]->SetPoint(entry, vLowGainMIP[i][j], vHighGainMIP[i][j]);
+        }
       }
     }
   }
@@ -73,7 +74,8 @@ void drawhlratio(){
     for(Int_t j=0; j<5; j++){
       //c1->cd(i*5+j+1);
       c1->cd(21+i-5*j);
-      ghl[i][j]->SetTitle(Form("Channel (%d,%d); High Gain Amplitude; Low Gain Amplitude", i+1, j+1));
+      ghl[i][j]->SetTitle(Form("Channel (%d,%d); Low Gain Amplitude; High Gain Amplitude", i+1, j+1));
+      ghl[i][j]->GetXaxis()->SetRangeUser(0, 2500);
       ghl[i][j]->SetMarkerStyle(20);
       ghl[i][j]->SetMarkerSize(0.5);
       ghl[i][j]->Draw("AP");

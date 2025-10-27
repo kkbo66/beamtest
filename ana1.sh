@@ -49,5 +49,5 @@ ROOTFILE="/home/kkbo/beamtest/root/$ROOTNAME"
 #/home/kkbo/beamtest/draw/drawval/build/drawHLratio $ROOTFILE
 
 #Draw MiP peak histogram (or more with cutvalue default cut 1000)
-/home/kkbo/beamtest/draw/elecal/build/drawPeak $ROOTFILE
+#/home/kkbo/beamtest/draw/elecal/build/drawPeak $ROOTFILE
 #/home/kkbo/beamtest/draw/elecal/build/drawPeak $ROOTFILE 1500

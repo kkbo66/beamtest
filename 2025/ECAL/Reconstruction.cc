@@ -365,7 +365,7 @@ int main(int argc, char const *argv[])
       SeedIDVec.push_back(maxCrystalID);
       if (totalEnergy < Para.EThresholdCluster())
         continue;
-      if (HitEnergy[maxIndex] < Para.EThresholdSeed())
+      if (maxEnergy < Para.EThresholdSeed())
         continue;
 
       ClusterSplitter m_ClusterSplitter;

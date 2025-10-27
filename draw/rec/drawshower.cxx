@@ -182,7 +182,6 @@ void drawshower(string rootfile, double energy)
     for (unsigned int j = 0; j < SeedID->size(); j++)
     {
       if (SeedID->at(j) == 326034)
-      //if (true)
       { // center crystal ID for ECAL
         double seed_energy = -1;
         int hitnum = 0;
@@ -193,15 +192,15 @@ void drawshower(string rootfile, double energy)
             seed_energy = Energy_Hit->at(k) / 1000;
             // break;
           }
-          else if (Energy_Hit->at(k) > 3)
+          else if (Energy_Hit->at(k) > 20)
           {
             hitnum++;
           }
         }
         // cout<<"Event: "<<i<<", Seed Energy: "<<seed_energy*1000<<" MeV"<< ", E5x5: "<<Energy_5x5->at(j)*1000<<" MeV"<<endl;
         if (seed_energy < seedcut)
-          //continue;
-        if (hitnum < 2)
+          continue;
+        if (hitnum < 5)
           continue;
         // if(!(ShowerX->at(j)>-2 && ShowerX->at(j)<2 && ShowerY->at(j)<2 && ShowerY->at(j)>-2)) continue;
         henergy_ecal->Fill(Energy_5x5->at(j) / 1000);
