@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 
+#define channelID_invert
+
 int hex2float(unsigned short tmp)
 {
     unsigned short Tmp = tmp;
@@ -41,6 +43,31 @@ int Channel2Hit(int ch)
 }
 
 // 电子学板通道号对应到晶体阵列位置C
+int Channel2C_invert(int ch)
+{
+    int C;
+    switch (ch)
+    {
+    case 3:
+        C = 36;
+        break;
+    case 0:
+        C = 35;
+        break;
+    case 1:
+        C = 34;
+        break;
+    case 4:
+        C = 33;
+        break;
+    case 5:
+        C = 32;
+        break;
+    default:
+        break;
+    }
+    return C;
+}
 int Channel2C(int ch)
 {
     int C;
@@ -97,28 +124,6 @@ bool Decode2025::clear(float (&mLamp)[6][_Npoints], float (&mHamp)[6][_Npoints],
 
     return true;
 }
-
-// bool ReadState(ifstream &indata, float (&temperature)[10], float &voltage, float &current)
-// {
-//     float da = 0;
-//     unsigned short *tmp = new unsigned short();
-//     for (int i = 0; i < 12; i++)
-//     {
-//         indata.read((char *)tmp, sizeof(unsigned short));
-//         if (i < 4)
-//             temperature[3 - i] = ((da / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-//         else if (i < 8)
-//             temperature[11 - i] = ((da / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-//         else if (i > 9)
-//             temperature[19 - i] = ((da / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-
-//         if (i == 8)
-//             current = (da / 65536 * 1.15) / 2 * 50;
-//         if (i == 9)
-//             voltage = (da / 65536 * 1.15) / 2 * 800;
-//     }
-//     return true;
-// }
 
 bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], float &voltage, float &current)
 {
@@ -302,6 +307,28 @@ Decode2025::Decode2025(std::string filename) : mHit(25)
             no = 1;
         Name[i] = std::to_string(i / 5 + 1) + "_" + std::to_string(no);
     }
+#ifdef channelID_invert
+    for (int i = 0; i < 25; i++)
+    {
+        int no;
+        if (i >= 10)
+        {
+            if (i % 5 == 0)
+                no = 2;
+            if (i % 5 == 1)
+                no = 3;
+            if (i % 5 == 2)
+                no = 1;
+            if (i % 5 == 3)
+                no = 4;
+            if (i % 5 == 4)
+                no = 5;
+        }
+        else
+            continue;
+        Name[i] = std::to_string(i / 5 + 1) + "_" + std::to_string(no);
+    }
+#endif
     for (int i = 0; i < 25; i++)
     {
         std::string name = "Hit_" + Name[i];
@@ -819,9 +846,11 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
             // throw_error("The triggerID in one event do not match!");
             std::cout << "Warning: The triggerID in one event do not match!" << std::endl;
         indata.read((char *)BlockNum, 1);
-        if (*BlockNum != 10)
-            // throw_error("Block number is not 10!");
-            std::cout << "Warning: Block number is not 10!" << std::endl;
+        bool nouse_online;
+        if (*BlockNum == 5)
+            nouse_online = true;
+        else
+            nouse_online = false;
         indata.seekg(-13 + *FrameLength - 2, indata.cur);
         indata.read((char *)tmp1, sizeof(unsigned short));
         // check frame head&tail
@@ -829,9 +858,12 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
         {
             // move pointer to block head
             indata.seekg(-static_cast<Long64_t>(*FrameLength) + 13, indata.cur);
-            // loop over 5 blocks (first 5: waveform data; last 5: online processed data)
+            // loop over all blocks (first 5: waveform data; last 5: online processed data)
             for (int nb = 0; nb < 10; nb++)
             {
+                // if no online information used, skip last 5 block
+                if (nb >= 5 && nouse_online)
+                    continue;
                 // check boardID
                 indata.read((char *)BoardID, sizeof(unsigned short));
                 if (*BoardID != nb)
@@ -927,10 +959,14 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
                             // crystalID
                             M = 28 - *BoardID;
                             C = Channel2C(i);
+#ifdef channelID_invert
+                            if (*BoardID >= 2)
+                                C = Channel2C_invert(i);
+#endif
                             CrystalID = 3 * 100000 + M * 1000 + C;
                             switch (i)
                             {
-                            case 0:
+                            case 4:
                                 temperature[0] = mTemperature[2];
                                 temperature[1] = mTemperature[3];
                                 break;
@@ -938,22 +974,51 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
                                 temperature[0] = mTemperature[0];
                                 temperature[1] = mTemperature[1];
                                 break;
-                            case 3:
+                            case 5:
                                 temperature[0] = mTemperature[4];
                                 temperature[1] = mTemperature[5];
                                 break;
-                            case 4:
+                            case 0:
                                 temperature[0] = mTemperature[8];
                                 temperature[1] = mTemperature[9];
                                 break;
-                            case 5:
+                            case 3:
                                 temperature[0] = mTemperature[6];
                                 temperature[1] = mTemperature[7];
                                 break;
                             default:
                                 break;
                             }
-
+#ifdef channelID_invert
+                            if (*BoardID >= 2)
+                            {
+                                switch (i)
+                                {
+                                case 0:
+                                    temperature[0] = mTemperature[2];
+                                    temperature[1] = mTemperature[3];
+                                    break;
+                                case 1:
+                                    temperature[0] = mTemperature[0];
+                                    temperature[1] = mTemperature[1];
+                                    break;
+                                case 3:
+                                    temperature[0] = mTemperature[4];
+                                    temperature[1] = mTemperature[5];
+                                    break;
+                                case 4:
+                                    temperature[0] = mTemperature[8];
+                                    temperature[1] = mTemperature[9];
+                                    break;
+                                case 5:
+                                    temperature[0] = mTemperature[6];
+                                    temperature[1] = mTemperature[7];
+                                    break;
+                                default:
+                                    break;
+                                }
+                            }
+#endif
                             if (i < 2)
                                 mHit[*BoardID * 5 + i]->Set(CrystalID, temperature[0], temperature[1], ampLG, ampHG, noiLG, noiHG, mLbase[i], mHbase[i], mLpeak[i], mHpeak[i]);
                             else
