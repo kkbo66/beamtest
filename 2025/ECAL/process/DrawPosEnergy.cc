@@ -133,6 +133,51 @@ std::vector<double> DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double pe
   return Vout;
 }
 
+void PosRes(std::string ecalfile)
+{
+  gStyle->SetOptFit(1111);
+  TFile *InfileECAL = new TFile(ecalfile.data(), "READ");
+  TTree *TrECAL = (TTree *)InfileECAL->Get("rec_data");
+  vector<int> *SeedID = 0;
+  vector<int> *HitID = 0;
+  vector<double> *Energy_5x5 = 0;
+  vector<double> *Energy_Hit = 0;
+  vector<double> *ShowerX = 0;
+  vector<double> *ShowerY = 0;
+  int triggerID;
+  TrECAL->SetBranchAddress("EventID", &triggerID);
+  TrECAL->SetBranchAddress("ShowerID", &SeedID);
+  TrECAL->SetBranchAddress("ShowerE5x5", &Energy_5x5);
+  TrECAL->SetBranchAddress("HitID", &HitID);
+  TrECAL->SetBranchAddress("HitEnergy", &Energy_Hit);
+  TrECAL->SetBranchAddress("ShowerPosX5x5", &ShowerX);
+  TrECAL->SetBranchAddress("ShowerPosY5x5", &ShowerY);
+
+  TH1D *hisx = new TH1D("his1", "posx", 100, -5, 5);
+  TH1D *hisy = new TH1D("his2", "posy", 100, -5, 5);
+  TH2D *hisecal = new TH2D("his3", "posecal", 50, -5, 5, 50, -5, 5);
+  TH2D *histr = new TH2D("his4", "postracker", 50, -5, 5, 50, -5, 5);
+  TH2D *hisres = new TH2D("his5", "posres", 50, -5, 5, 50, -5, 5);
+  hisx->SetTitle("position resolution;posx[cm];counts");
+  hisy->SetTitle("position resolution;posx[cm];counts");
+  hisres->SetTitle("position distribution;posx[cm];posy[cm]");
+  hisx->SetDirectory(nullptr);
+  hisy->SetDirectory(nullptr);
+  hisecal->SetDirectory(nullptr);
+  histr->SetDirectory(nullptr);
+  hisres->SetDirectory(nullptr);
+
+  for (int i = 0; i < TrECAL->GetEntries(); i++)
+  {
+    TrECAL->GetEntry(i);
+    if (ShowerX->size() == 1)
+      //   continue;
+      hisecal->Fill(ShowerX->at(0), ShowerY->at(0));
+  }
+  TCanvas *can3 = new TCanvas();
+  hisecal->Draw("colz");
+  InfileECAL->Close();
+}
 void PosRes(std::string ecalfile, std::string trackfile)
 {
   gStyle->SetOptFit(1111);

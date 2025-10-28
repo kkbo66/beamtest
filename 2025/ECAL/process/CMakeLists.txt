@@ -36,6 +36,10 @@ target_link_libraries(DrawValue ${ROOT_LIBRARIES})
 add_executable(DrawPosEnergy "DrawPosEnergy.cc" ${sources} ${headers})
 target_link_libraries(DrawPosEnergy ${ROOT_LIBRARIES})
 
+# draw superimposed waveforms of all channels
+add_executable(Draw5x5SumWave "Draw5x5SumWave.cc" ${sources} ${headers})
+target_link_libraries(Draw5x5SumWave ${ROOT_LIBRARIES})
+
 file(GLOB SHELL_SCRIPTS "${CMAKE_SOURCE_DIR}/*.sh")
 
 file(COPY ${SHELL_SCRIPTS} DESTINATION ${CMAKE_BINARY_DIR})
