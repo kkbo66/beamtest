@@ -98,28 +98,6 @@ bool Decode2025::clear(float (&mLamp)[6][_Npoints], float (&mHamp)[6][_Npoints],
     return true;
 }
 
-// bool ReadState(ifstream &indata, float (&temperature)[10], float &voltage, float &current)
-// {
-//     float da = 0;
-//     unsigned short *tmp = new unsigned short();
-//     for (int i = 0; i < 12; i++)
-//     {
-//         indata.read((char *)tmp, sizeof(unsigned short));
-//         if (i < 4)
-//             temperature[3 - i] = ((da / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-//         else if (i < 8)
-//             temperature[11 - i] = ((da / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-//         else if (i > 9)
-//             temperature[19 - i] = ((da / 65536 * 1.15) * 1000 - 943.227) / -5.194 + 30;
-
-//         if (i == 8)
-//             current = (da / 65536 * 1.15) / 2 * 50;
-//         if (i == 9)
-//             voltage = (da / 65536 * 1.15) / 2 * 800;
-//     }
-//     return true;
-// }
-
 bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], float &voltage, float &current)
 {
     // move pointer to state information
@@ -819,9 +797,11 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
             // throw_error("The triggerID in one event do not match!");
             std::cout << "Warning: The triggerID in one event do not match!" << std::endl;
         indata.read((char *)BlockNum, 1);
-        if (*BlockNum != 10)
-            // throw_error("Block number is not 10!");
-            std::cout << "Warning: Block number is not 10!" << std::endl;
+        bool nouse_online;
+        if (*BlockNum == 5)
+            nouse_online = true;
+        else
+            nouse_online = false;
         indata.seekg(-13 + *FrameLength - 2, indata.cur);
         indata.read((char *)tmp1, sizeof(unsigned short));
         // check frame head&tail
@@ -829,9 +809,12 @@ void Decode2025::GetHitOnline(std::ifstream &indata)
         {
             // move pointer to block head
             indata.seekg(-static_cast<Long64_t>(*FrameLength) + 13, indata.cur);
-            // loop over 5 blocks (first 5: waveform data; last 5: online processed data)
+            // loop over all blocks (first 5: waveform data; last 5: online processed data)
             for (int nb = 0; nb < 10; nb++)
             {
+                // if no online information used, skip last 5 block
+                if (nb >= 5 && nouse_online)
+                    continue;
                 // check boardID
                 indata.read((char *)BoardID, sizeof(unsigned short));
                 if (*BoardID != nb)
