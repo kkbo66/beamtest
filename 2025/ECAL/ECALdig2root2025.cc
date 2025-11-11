@@ -95,7 +95,8 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            rootfiles.push_back("re.root");
+            // rootfiles.push_back("re.root");
+            rootfiles.push_back(nameChanger(datafiles.at(0)));
             cout << "Auto save file as re.root..." << endl;
         }
     }

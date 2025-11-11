@@ -27,12 +27,14 @@ private:
     bool clear(float (&)[6][_Npoints], float (&)[6][_Npoints], float (&)[6][_Nnoise], float (&)[6][_Nnoise], float (&)[6], float (&)[6], float (&)[6], float (&)[6]);
     // read work state information
     bool ReadState(std::ifstream &, float (&)[10], float &, float &);
+    // read hit data of one block(no work state information)
+    bool ReadDataDAQ(std::ifstream &, float (&)[6][_Npoints], float (&)[6][_Npoints], float (&)[6][_Nnoise], float (&)[6][_Nnoise], float (&)[6], float (&)[6], float (&)[6], float (&)[6]);
     // read hit data of one block
     bool ReadData(std::ifstream &, float (&)[6][_Npoints], float (&)[6][_Npoints], float (&)[6][_Nnoise], float (&)[6][_Nnoise], float (&)[6], float (&)[6], float (&)[6], float (&)[6]);
     // read online processed information
     bool ReadData(std::ifstream &, double &, std::vector<unsigned short> &, std::vector<double> &, std::vector<double> &, std::vector<double> &);
 
-    TFile *mFile;
+        TFile *mFile;
     TTree *mTree;
 
     std::vector<DataModel2025 *> mHit;

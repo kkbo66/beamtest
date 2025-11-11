@@ -152,6 +152,68 @@ bool Decode2025::ReadState(std::ifstream &indata, float (&temperature)[10], floa
     return true;
 }
 
+bool Decode2025::ReadDataDAQ(std::ifstream &indata, float (&mLamp)[6][_Npoints], float (&mHamp)[6][_Npoints], float (&mLnoi)[6][_Nnoise], float (&mHnoi)[6][_Nnoise], float (&mLbase)[6], float (&mHbase)[6], float (&mLpeak)[6], float (&mHpeak)[6])
+{
+    unsigned short *tmp = new unsigned short();
+    unsigned short amp;
+    int channel, point;
+    bool HLG;
+    // skip block header
+    indata.seekg(24, indata.cur);
+    // loop over 3 clusters
+    for (int i = 0; i < 3; i++)
+    {
+        indata.read((char *)tmp, sizeof(unsigned short));
+        if (static_cast<int>(*tmp) != _Npoints)
+            throw_error("Defined sampled point number `_Npoints` is wrong!");
+        indata.seekg(4, indata.cur);
+        indata.read((char *)tmp, sizeof(unsigned short));
+        if (static_cast<int>(*tmp) != i)
+            throw_error("ADC serial number is not in order!");
+        // loop over 4 channels
+        for (int j = 0; j < 4 * _Npoints; j++)
+        {
+            channel = i * 2 + j % 4 / 2;
+            HLG = static_cast<bool>((j + 1) % 2);
+            point = j / 4;
+
+            indata.read((char *)tmp, sizeof(unsigned short));
+            amp = *tmp / 4;
+            if (HLG)
+            {
+                mHamp[channel][point] = amp;
+                if (point < _Nnoise)
+                {
+                    mHnoi[channel][point] = amp;
+                    mHbase[channel] += amp;
+                }
+                if (point == 0)
+                    mHpeak[channel] = amp;
+                else if (amp > mHpeak[channel] && point > _timewinb && point < _timewine)
+                    mHpeak[channel] = amp;
+            }
+            else
+            {
+                mLamp[channel][point] = amp;
+                if (point < _Nnoise)
+                {
+                    mLnoi[channel][point] = amp;
+                    mLbase[channel] += amp;
+                }
+                if (point == 0)
+                    mLpeak[channel] = amp;
+                else if (amp > mLpeak[channel] && point > _timewinb && point < _timewine)
+                    mLpeak[channel] = amp;
+            }
+        }
+    }
+    // skip the 2nd long timecode
+    for (int i = 0; i < 4; i++)
+        indata.read((char *)tmp, sizeof(unsigned short));
+    delete tmp;
+    return true;
+}
+
 // read waveform points in one frame
 bool Decode2025::ReadData(std::ifstream &indata, float (&mLamp)[6][_Npoints], float (&mHamp)[6][_Npoints], float (&mLnoi)[6][_Nnoise], float (&mHnoi)[6][_Nnoise], float (&mLbase)[6], float (&mHbase)[6], float (&mLpeak)[6], float (&mHpeak)[6])
 {
@@ -474,7 +536,7 @@ void Decode2025::GetHit(std::ifstream &indata)
                 ReadState(indata, mTemperature, mVoltage[*BoardID], mCurrent[*BoardID]);
                 // read information of a board (3*2 H/LG channel): waveform, noise, baseline and peak
                 clear(mLamp, mHamp, mLnoi, mHnoi, mLbase, mHbase, mLpeak, mHpeak);
-                ReadData(indata, mLamp, mHamp, mLnoi, mHnoi, mLbase, mHbase, mLpeak, mHpeak);
+                ReadDataDAQ(indata, mLamp, mHamp, mLnoi, mHnoi, mLbase, mHbase, mLpeak, mHpeak);
 
                 // set information of Hits
                 for (int i = 0; i < 6; i++)
@@ -683,7 +745,7 @@ void Decode2025::GetHitDAQ(std::ifstream &indata)
                     ReadState(indata, mTemperature, mVoltage[*BoardID], mCurrent[*BoardID]);
                     // read information of a board (3*2 H/LG channel): waveform, noise, baseline and peak
                     clear(mLamp, mHamp, mLnoi, mHnoi, mLbase, mHbase, mLpeak, mHpeak);
-                    ReadData(indata, mLamp, mHamp, mLnoi, mHnoi, mLbase, mHbase, mLpeak, mHpeak);
+                    ReadDataDAQ(indata, mLamp, mHamp, mLnoi, mHnoi, mLbase, mHbase, mLpeak, mHpeak);
 
                     // set information of Hits
                     for (int i = 0; i < 6; i++)
