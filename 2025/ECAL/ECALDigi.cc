@@ -123,7 +123,6 @@ int main(int argc, char const *argv[])
 
   for (int i = 0; i < nEntries; i++)
   {
-    // for(int i=0;i<200;i++){
     int progress = static_cast<float>(i + 1) / nEntries * 100;
     if ((i + 1) % interval == 0)
     {
@@ -164,7 +163,7 @@ int main(int argc, char const *argv[])
       int LGMaxID = 0;
       double LGMaxAmp = 0;
 
-      for (int j = 40; j < 80; j++)
+      for (int j = 100; j < 140; j++)
       {
         if (HGA[j] >= HGMaxAmp)
         {
@@ -173,7 +172,7 @@ int main(int argc, char const *argv[])
         }
       }
 
-      for (int j = 40; j < 80; j++)
+      for (int j = 100; j < 140; j++)
       {
         if (LGA[j] >= LGMaxAmp)
         {
@@ -182,10 +181,8 @@ int main(int argc, char const *argv[])
         }
       }
 
-      // cout<<i<<"  "<<HGMaxID<<endl;
-
       bool IsOsc = false;
-      if ((HGMaxID < 56 || HGMaxID > 62) && HGMaxAmp < 16000)
+      if ((HGMaxID < 110 || HGMaxID > 120) && HGMaxAmp < 16000)
         IsOsc = true;
 
       int cc = 40;
@@ -207,9 +204,9 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < 11; j++)
           f1->SetParameter(j, Para.HGWfPara(k, j));
         f1->SetParameter(1, 0);
-        //OnePulseFit(cc, hgtimingvec, &time, &amp, &pedestal, &chi2, f1);
-        //TimeHG.push_back((HGMaxID) * 12.5 - dd * 12.5 + time);
-        //AmpHG_Fit.push_back(amp * f1->GetMaximum());
+        // OnePulseFit(cc, hgtimingvec, &time, &amp, &pedestal, &chi2, f1);
+        // TimeHG.push_back((HGMaxID) * 12.5 - dd * 12.5 + time);
+        // AmpHG_Fit.push_back(amp * f1->GetMaximum());
         TimeHG.push_back(HGMaxID * 12.5);
         AmpHG_Fit.push_back(Hit[k]->HighGainPeak - Para.HGPedestal(k));
       }
@@ -220,7 +217,6 @@ int main(int argc, char const *argv[])
         else
           TimeHG.push_back(888888);
         AmpHG_Fit.push_back(Hit[k]->HighGainPeak - Para.HGPedestal(k));
-        // AmpHG_Fit.push_back(0);
       }
 
       if (Hit[k]->LowGainPeak > (Para.LGPedestal(k) + 6 * Para.LGNoise(k)) && Hit[k]->LowGainPeak < 16000 && IsOsc == false)
@@ -228,9 +224,9 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < 11; j++)
           f1->SetParameter(j, Para.LGWfPara(k, j));
         f1->SetParameter(1, 0);
-        //OnePulseFit(cc, lgtimingvec, &time, &amp, &pedestal, &chi2, f1);
-        //TimeLG.push_back((LGMaxID) * 12.5 - dd * 12.5 + time);
-        //AmpLG_Fit.push_back(amp * f1->GetMaximum());
+        // OnePulseFit(cc, lgtimingvec, &time, &amp, &pedestal, &chi2, f1);
+        // TimeLG.push_back((LGMaxID) * 12.5 - dd * 12.5 + time);
+        // AmpLG_Fit.push_back(amp * f1->GetMaximum());
         TimeLG.push_back(LGMaxID * 12.5);
         AmpLG_Fit.push_back(Hit[k]->LowGainPeak - Para.LGPedestal(k));
       }
@@ -241,11 +237,7 @@ int main(int argc, char const *argv[])
         else
           TimeLG.push_back(888888);
         AmpLG_Fit.push_back(Hit[k]->LowGainPeak - Para.LGPedestal(k));
-        // AmpLG_Fit.push_back(0);
       }
-
-      // cout<<i<<" "<<k<<" "<<Hit[k]->HighGainPeak<<"  "<<Hit[k]->HighGainPeak-Para.HGPedestal(k)<<"  "<<AmpHG_Fit.at(k)<<endl;
-      // cout<<i<<" "<<k<<" "<<Hit[k]->LowGainPeak<<"  "<<Hit[k]->LowGainPeak-Para.LGPedestal(k)<<"  "<<AmpLG_Fit.at(k)<<endl;
     }
 
     ECALdigi_data->Fill();
