@@ -14,12 +14,13 @@
 #include "TChain.h"
 
 #include "Parameter.hh"
+#include "Decode2025.hh"
 #include <eigen3/Eigen/Dense>
 #include <assert.h>
-
 using namespace std;
 using namespace TMath;
 using namespace Eigen;
+// 1024run10调延迟后，滞后32个点
 
 Double_t ff(double *x, double *par)
 {
@@ -85,12 +86,21 @@ int main(int argc, char const *argv[])
   }
 
   TString outputfile;
-  if (argc == 3)
+  if (argc >= 3)
     outputfile = argv[2];
   else
   {
     outputfile = "ECALDigi.root";
     cout << "Auto save file as ECALDigi.root..." << endl;
+  }
+  // true：调整寻峰窗口延迟
+  bool TimeDelay;
+  if (argc >= 4)
+  {
+    if (std::stoi(argv[3]) == 1)
+      TimeDelay = true;
+    else
+      TimeDelay = false;
   }
 
   TFile *f = new TFile(outputfile.Data(), "recreate");
@@ -163,7 +173,13 @@ int main(int argc, char const *argv[])
       int LGMaxID = 0;
       double LGMaxAmp = 0;
 
-      for (int j = 100; j < 140; j++)
+      int Pstart = 65, Pstop = 95;
+      if (TimeDelay)
+      {
+        Pstart += 35;
+        Pstop += 35;
+      }
+      for (int j = Pstart; j < Pstop; j++)
       {
         if (HGA[j] >= HGMaxAmp)
         {
@@ -172,7 +188,7 @@ int main(int argc, char const *argv[])
         }
       }
 
-      for (int j = 100; j < 140; j++)
+      for (int j = Pstart; j < Pstop; j++)
       {
         if (LGA[j] >= LGMaxAmp)
         {
@@ -182,7 +198,7 @@ int main(int argc, char const *argv[])
       }
 
       bool IsOsc = false;
-      if ((HGMaxID < 110 || HGMaxID > 120) && HGMaxAmp < 16000)
+      if ((HGMaxID < (Pstart + 10) || HGMaxID > (Pstop - 10)) && HGMaxAmp < 16000)
         IsOsc = true;
 
       int cc = 40;
@@ -213,10 +229,16 @@ int main(int argc, char const *argv[])
       else
       {
         if (IsOsc == false)
+        {
           TimeHG.push_back(999999);
+          AmpHG_Fit.push_back(Hit[k]->HighGainPeak - Para.HGPedestal(k));
+        }
         else
+        {
           TimeHG.push_back(888888);
-        AmpHG_Fit.push_back(Hit[k]->HighGainPeak - Para.HGPedestal(k));
+          AmpHG_Fit.push_back(0);
+          // AmpHG_Fit.push_back(Hit[k]->HighGainPeak - Para.HGPedestal(k));
+        }
       }
 
       if (Hit[k]->LowGainPeak > (Para.LGPedestal(k) + 6 * Para.LGNoise(k)) && Hit[k]->LowGainPeak < 16000 && IsOsc == false)
@@ -233,10 +255,16 @@ int main(int argc, char const *argv[])
       else
       {
         if (IsOsc == false)
+        {
           TimeLG.push_back(999999);
+          AmpLG_Fit.push_back(Hit[k]->LowGainPeak - Para.LGPedestal(k));
+        }
         else
+        {
           TimeLG.push_back(888888);
-        AmpLG_Fit.push_back(Hit[k]->LowGainPeak - Para.LGPedestal(k));
+          AmpLG_Fit.push_back(0);
+          // AmpLG_Fit.push_back(Hit[k]->LowGainPeak - Para.LGPedestal(k));
+        }
       }
     }
 

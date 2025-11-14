@@ -7,6 +7,7 @@
 #include "TString.h"
 
 #include "DataModel2025.hh"
+// 1024run26开始样机第1、2、3列电子学通道顺序接反
 
 class Decode2025
 {
@@ -19,6 +20,8 @@ public:
     void GetHitDAQ(std::ifstream &);
     // 在线处理格式
     void GetHitOnline(std::ifstream &);
+    // 调换通道顺序
+    void InvertChannel(bool invert) { mChannelInvert = invert; }
 
 private:
     // report error and exit
@@ -34,7 +37,7 @@ private:
     // read online processed information
     bool ReadData(std::ifstream &, double &, std::vector<unsigned short> &, std::vector<double> &, std::vector<double> &, std::vector<double> &);
 
-        TFile *mFile;
+    TFile *mFile;
     TTree *mTree;
 
     std::vector<DataModel2025 *> mHit;
@@ -46,6 +49,8 @@ private:
     float mVoltage[5];
     float mCurrent[5];
     float mTemperature[10];
+    // true：更换1、2、3列电子学通道顺序
+    bool mChannelInvert;
 };
 
 #endif
