@@ -130,7 +130,7 @@ int main(int argc, char const *argv[])
 
   int nEntries = tree->GetEntries();
   int interval = nEntries / 20;
-
+  
   for (int i = 0; i < nEntries; i++)
   {
     int progress = static_cast<float>(i + 1) / nEntries * 100;
@@ -214,7 +214,17 @@ int main(int argc, char const *argv[])
       }
 
       double time, amp, pedestal, chi2;
-
+      // if (triggerID == 0)
+      // {
+      //   for (int j = 0; j < 11; j++)
+      //     f1->SetParameter(j, Para.HGWfPara(k, j));
+      //   f1->Draw();
+      //   gPad->SaveAs(Form("fitfunctionHG_%d.png", k));
+      //   for (int j = 0; j < 11; j++)
+      //     f1->SetParameter(j, Para.LGWfPara(k, j));
+      //   f1->Draw();
+      //   gPad->SaveAs(Form("fitfunctionLG_%d.png", k));
+      // }
       if (Hit[k]->HighGainPeak > (Para.HGPedestal(k) + 6 * Para.HGNoise(k)) && Hit[k]->HighGainPeak < 16000 && IsOsc == false)
       {
         for (int j = 0; j < 11; j++)

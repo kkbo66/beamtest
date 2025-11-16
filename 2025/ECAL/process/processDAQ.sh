@@ -1,4 +1,5 @@
 #!/bin/bash
+# 这个脚本是对DAQ服务器上lunon下的束流数据进行处理
 para_num() {
   if test $# -lt 1; then
     echo "Please Input data file realpath(/data/DAQ/Beam_2510/*.dat), or plus 2nd parameter: file number to copy"

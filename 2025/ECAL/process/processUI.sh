@@ -1,7 +1,8 @@
 #!/bin/bash
+# 这个脚本是对UI服务器上/ustcfs3/stcf/BT2025/目录下的束流数据进行处理
 para_num() {
-    if test $# -lt 1; then
-        echo "Please Input data file realpath, or plus 2nd parameter: file number to process"
+    if test $# -lt 2; then
+        echo "请输入至少2个参数, par1: UI服务器上数据文件夹的绝对路径; par2: runID的类型(延迟/接线); par3: 处理文件个数"
         exit 1
     fi
 }
@@ -14,11 +15,27 @@ get_last_dirs() {
         eval "dir$((i - total + n + 1))=${parts[$i]}"
     done
 }
-# 输入参数1: UI01服务器中的数据文件夹绝对路径“**/ECAL/”
-# 输入参数2：处理的文件数目(缺省时拷贝全部文件)
+# ！！输入参数1: UI01服务器中的数据文件夹绝对路径“**/ECAL/”
+# ！！输入参数2：处理的文件数目(缺省时拷贝全部文件)
+# ！！输入参数3: 触发延迟（delay）和接线错误（connect）的run标注
+# RUNSORT=0(default)：早于1024run10
+# RUNSORT=1：1024run10到1024run26 (触发延迟)
+# RUNSORT=2：1024run27到1029run10 （触发延迟+接线错误）
 DATAFILEPATH=$1
-FILENUMBER=$2
+RUNSORT=$2
+FILENUMBER=$3
 para_num $@
+
+if [ $RUNSORT == 0 ]; then
+    delay=0
+    connect=0
+elif [ $RUNSORT == 1 ]; then
+    delay=1
+    connect=0
+elif [ $RUNSORT == 2 ]; then
+    delay=1
+    connect=1
+fi
 
 DATAFILEPATH=${DATAFILEPATH%/}
 if [ $(basename $DATAFILEPATH) != "ECAL" ]; then
@@ -47,12 +64,12 @@ if [ ! -f "decode.root" ]; then
     if [ -n "$FILENUMBER" ]; then
         ls $DATAFILEPATH/data_ECAL*.dat | sort | head -n "$FILENUMBER" | while read -r f; do
             datapath=$(realpath "$f")
-            ${DECODE_DIR}/ECALdig2root2025 ${datapath} "$(basename "${datapath%.dat}").root"
+            ${DECODE_DIR}/ECALdig2root2025 ${datapath} "$(basename "${datapath%.dat}").root" $connect
         done
     else
         ls $DATAFILEPATH/data_ECAL*.dat | sort | while read -r f; do
             datapath=$(realpath "$f")
-            ${DECODE_DIR}/ECALdig2root2025 ${datapath} "$(basename "${datapath%.dat}").root"
+            ${DECODE_DIR}/ECALdig2root2025 ${datapath} "$(basename "${datapath%.dat}").root" $connect
         done
     fi
     # 等待后台程序执行完毕
@@ -65,7 +82,7 @@ fi
 
 # 数字化和重建
 if [ ! -f 'digi.root' ]; then
-    ${DECODE_DIR}/ECALDigi $(pwd)/decode.root digi.root
+    ${DECODE_DIR}/ECALDigi $(pwd)/decode.root digi.root $delay
     echo "generate $(pwd)/digi.root"
 fi
 if [ ! -f "rec.root" ]; then
@@ -73,4 +90,5 @@ if [ ! -f "rec.root" ]; then
     echo "generate $(pwd)/rec.root"
 fi
 
+# ${SCRIPT_DIR}/DrawPosEnergy rec.root
 popd >/dev/null
