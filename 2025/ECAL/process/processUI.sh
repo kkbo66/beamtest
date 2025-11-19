@@ -90,5 +90,13 @@ if [ ! -f "rec.root" ]; then
     echo "generate $(pwd)/rec.root"
 fi
 
-# ${SCRIPT_DIR}/DrawPosEnergy rec.root
+# echo "fit electron energy spectrum"
+# ${SCRIPT_DIR}/DrawEnergy rec.root
+
+# echo "fit electron position distribution"
+# ${SCRIPT_DIR}/DrawPosition rec.root Tracker-step4-rec.root
+
+# echo "print working state information"
+# ${SCRIPT_DIR}/Draw5x5NoiseTempGratio decode.root
+
 popd >/dev/null

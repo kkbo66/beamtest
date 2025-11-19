@@ -39,7 +39,7 @@ std::vector<double> DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double pe
     {
       double b = 0.030 + 0.0001 * double(j);
       f1->SetParameters(100, (h->GetMaximumBin() * h->GetBinWidth(0) + h->GetBinCenter(0)) * a, b, 0.6, 2.8);
-      h->Fit(f1, "ESR");
+      h->Fit(f1, "ESR", "", h->GetBinCenter(1) * 1.5, h->GetBinCenter(h->GetNbinsX()));
       double Mean1 = f1->GetParameter(1);
       double Sigma1 = f1->GetParameter(2);
       double A1 = abs(f1->GetParameter(3));
@@ -91,12 +91,14 @@ std::vector<double> DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double pe
         text1 = pt21->AddText(s21);
         text1 = pt31->AddText(s31);
 
-        h->SetYTitle(Form("Events /%.2f(MeV/c^{2})", 1000 * perbin));
+        h->SetYTitle("Counts");
         h->SetXTitle(xname);
         h->GetYaxis()->SetLabelSize(0.05);
         h->GetYaxis()->SetTitleSize(0.05);
         h->GetXaxis()->SetLabelSize(0.05);
-        h->GetYaxis()->SetTitleSize(0.05);
+        h->GetXaxis()->SetTitleSize(0.05);
+        // h->GetXaxis()->CenterTitle();
+        // h->GetYaxis()->CenterTitle();
         h->GetXaxis()->SetTitleOffset(0.9);
         h->GetYaxis()->SetTitleOffset(0.9);
 
@@ -120,7 +122,7 @@ std::vector<double> DoFit(TH1F *h, TF1 *f1, TCanvas *c, TString xname, double pe
         TString label;
         label = "ECAL";
         leg2->AddEntry(h, label, "l");
-        leg2->Draw();
+        // leg2->Draw();
       }
       if (swith == true)
         break;
@@ -251,10 +253,10 @@ void PosRes(std::string ecalfile, std::string trackfile)
   InfileTrack->Close();
 }
 
-void DrawPosEnergy(string rootfile, double energy = 1000)
+void DrawEnergy(string rootfile, double energy = 1000)
 {
-
   gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);
   vector<string> rootlist;
   rootlist.clear();
   if (rootfile.find(".txt") != string::npos)
@@ -389,7 +391,7 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
   hpos->SetLineColor(kBlue);
   hpos->SetLineWidth(2);
   hpos->Draw("colz");
-  c_pos->SaveAs(Form("%s.png", pos_name.Data()));
+  // c_pos->SaveAs(Form("%s.png", pos_name.Data()));
   TString posx_name = "c_posx_" + energy_str;
   TCanvas *c_posx = new TCanvas(posx_name, posx_name, 800, 600);
   c_posx->cd();
@@ -405,7 +407,7 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
   hposx->SetLineColor(kBlue);
   hposx->SetLineWidth(2);
   hposx->Draw("hist");
-  c_posx->SaveAs(Form("%s.png", posx_name.Data()));
+  // c_posx->SaveAs(Form("%s.png", posx_name.Data()));
   TString posy_name = "c_posy_" + energy_str;
   TCanvas *c_posy = new TCanvas(posy_name, posy_name, 800, 600);
   c_posy->cd();
@@ -421,7 +423,7 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
   hposy->SetLineColor(kBlue);
   hposy->SetLineWidth(2);
   hposy->Draw("hist");
-  c_posy->SaveAs(Form("%s.png", posy_name.Data()));
+  // c_posy->SaveAs(Form("%s.png", posy_name.Data()));
 
   TString canvas_name = "c_" + energy_str;
   TCanvas *c = new TCanvas(canvas_name, canvas_name, 800, 600);
@@ -430,13 +432,14 @@ void DrawPosEnergy(string rootfile, double energy = 1000)
 
   double mean;
   double sigma;
-  std::vector<double> Vfit = DoFit(henergy_ecal, f1, c, "E_{5x5} (GeV)", perbin);
+  std::vector<double> Vfit = DoFit(henergy_ecal, f1, c, "Energy/GeV", perbin);
   mean = Vfit[0];
   sigma = Vfit[1];
   c->SaveAs(Form("%s.png", canvas_name.Data()));
   cout << t->GetEntries() << " entries in total." << endl;
   cout << "Event entries selected: " << henergy_ecal->Integral() << endl;
   cout << "Energy: " << energy_str << ", Mean: " << mean * 1000 << " MeV, Resolution: " << sigma << " %" << endl;
+  cout << "Energy fit error: " << f1->GetParError(1) << std::endl;
 }
 int main(int argc, char *argv[])
 {
@@ -447,11 +450,11 @@ int main(int argc, char *argv[])
   }
   else if (argc == 2)
   {
-    DrawPosEnergy(argv[1], 1000);
+    DrawEnergy(argv[1], 1000);
   }
   else
   {
-    DrawPosEnergy(argv[1], std::stod(argv[2]));
+    DrawEnergy(argv[1], std::stod(argv[2]));
   }
   return 0;
 }
