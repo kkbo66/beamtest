@@ -32,13 +32,25 @@ target_link_libraries(FitMip ${ROOT_LIBRARIES})
 add_executable(DrawValue "DrawValue.cc" ${sources} ${headers})
 target_link_libraries(DrawValue ${ROOT_LIBRARIES})
 
-# draw reconstructed position and energy distribution for electron [par0: reconstructed file; par1: electron beam energy]
-add_executable(DrawPosEnergy "DrawPosEnergy.cc" ${sources} ${headers})
-target_link_libraries(DrawPosEnergy ${ROOT_LIBRARIES})
+# draw reconstructed energy distribution for electron [par0: reconstructed file; par1: electron beam energy]
+add_executable(DrawEnergy "DrawEnergy.cc" ${sources} ${headers})
+target_link_libraries(DrawEnergy ${ROOT_LIBRARIES})
+
+# draw reconstructed position distribution for electron [par0: ecal file; par1: tracker file]/[par0: data path]
+add_executable(DrawPosition "DrawPosition.cc" ${sources} ${headers})
+target_link_libraries(DrawPosition ${ROOT_LIBRARIES})
 
 # draw superimposed waveforms of all channels
 add_executable(Draw5x5SumWave "Draw5x5SumWave.cc" ${sources} ${headers})
 target_link_libraries(Draw5x5SumWave ${ROOT_LIBRARIES})
+
+# draw noise, temperature and H/L gain ratio of all channels
+add_executable(Draw5x5NoiseTempGratio "Draw5x5NoiseTempGratio.cc" ${sources} ${headers})
+target_link_libraries(Draw5x5NoiseTempGratio ${ROOT_LIBRARIES})
+
+# draw and fit MIP spectra of all channels
+add_executable(Draw5x5MIPSpectra "Draw5x5MIPSpectra.cc" ${sources} ${headers})
+target_link_libraries(Draw5x5MIPSpectra ${ROOT_LIBRARIES})
 
 # electric calibration 
 add_executable(ElectricCalibrate "ElectricCalibrate.cc" ${sources} ${headers})

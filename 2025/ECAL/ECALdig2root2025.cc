@@ -78,7 +78,7 @@ int main(int argc, char const *argv[])
         datafiles.push_back(argv[1]);
 
     vector<string> rootfiles;
-    if (argc == 3)
+    if (argc >= 3)
     {
         if (isRootFile(argv[2]))
             rootfiles.push_back(string(argv[2]));
@@ -95,15 +95,24 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            // rootfiles.push_back("re.root");
+            // rootfiles.push_back("decode.root");
             rootfiles.push_back(nameChanger(datafiles.at(0)));
-            cout << "Auto save file as re.root..." << endl;
+            cout << "Auto save file as: " << rootfiles.at(0) << endl;
         }
     }
-
+    // true：更换1、2、3列电子学通道顺序
+    bool ChannelInvert;
+    if (argc >= 4)
+    {
+        if (std::stoi(argv[3]) == 1)
+            ChannelInvert = true;
+        else
+            ChannelInvert = false;
+    }
     if (rootfiles.size() == 1)
     {
         Decode2025 *De = new Decode2025(rootfiles.at(0));
+        De->InvertChannel(ChannelInvert);
 
         for (size_t i = 0; i < datafiles.size(); i++)
         {
@@ -117,6 +126,7 @@ int main(int argc, char const *argv[])
             // De->GetHit(indata);
             // DAQ格式
             // De->GetHitDAQ(indata);
+            // 2023run46之后解码包含在线TQ信息
             // 在线格式
             De->GetHitOnline(indata);
             indata.close();
@@ -128,6 +138,7 @@ int main(int argc, char const *argv[])
         for (size_t i = 0; i < datafiles.size(); i++)
         {
             Decode2025 *De = new Decode2025(rootfiles.at(i));
+            De->InvertChannel(ChannelInvert);
             ifstream indata(datafiles.at(i), ios::binary);
             if (!indata.good())
             {
