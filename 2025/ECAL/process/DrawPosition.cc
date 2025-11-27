@@ -60,6 +60,33 @@ void DrawPosition(std::string ecalfile, std::string trackfile)
     TrECAL->SetBranchAddress("ShowerPosX5x5", &ShowerX);
     TrECAL->SetBranchAddress("ShowerPosY5x5", &ShowerY);
 
+    // determine electron beam energy
+    double energy;
+    TH1F *energy_test = new TH1F("energy", "energy", 1000, 0, 10000);
+    double maxenergy = 0, maxheight = 0;
+    for (int i = 0; i < TrECAL->GetEntries(); i++)
+    {
+        TrECAL->GetEntry(i);
+        for (size_t j = 0; j < Energy_5x5->size(); j++)
+        {
+            energy_test->Fill(Energy_5x5->at(j));
+            if ((Energy_5x5->at(j) > maxenergy) && (energy_test->GetBinContent(static_cast<int>(Energy_5x5->at(j) / energy_test->GetBinWidth(0))) > 50))
+                maxenergy = Energy_5x5->at(j);
+        }
+    }
+    int startbin = 0, maxbin = 0;
+    startbin = maxenergy / 2 / 10;
+    for (int i = startbin; i < energy_test->GetNbinsX(); i++)
+    {
+        if (energy_test->GetBinContent(i) > maxheight)
+        {
+            maxheight = energy_test->GetBinContent(i);
+            maxbin = i;
+        }
+    }
+    energy = std::round(maxbin * energy_test->GetBinWidth(0) / 100) * 100;
+    double energy_cut = energy / 5;
+
     TH1D *hisx = new TH1D("his1", "posx", 100, -40, 40);
     TH1D *hisy = new TH1D("his2", "posy", 100, -40, 40);
     TH2D *hisecal = new TH2D("his3", "posecal", 40, -40, 40, 40, -40, 40);
@@ -85,7 +112,7 @@ void DrawPosition(std::string ecalfile, std::string trackfile)
     {
         TrECAL->GetEntry(i);
         TrTrack->GetEntry(i);
-        if (!(ShowerX->size() == 1 && Energy_5x5->at(0) > 500 && triggerID == trackID && SeedID->at(0) == 326034 && (trackPos[0] != 0 || trackPos[1] != 0) && (sqrt(Power(trackVec[1], 2) + Power(trackVec[0], 2)) < 0.002)))
+        if (!(ShowerX->size() == 1 && Energy_5x5->at(0) > energy_cut && triggerID == trackID && SeedID->at(0) == 326034 && (trackPos[0] != 0 || trackPos[1] != 0) && (sqrt(Power(trackVec[1], 2) + Power(trackVec[0], 2)) < 0.002)))
             continue;
         if (!(fabs(ShowerX->at(0)) < 1 && fabs(ShowerY->at(0)) < 1))
             continue;
@@ -157,6 +184,33 @@ void DrawPosition(TString path)
     TrECAL->SetBranchAddress("ShowerPosX5x5", &ShowerX);
     TrECAL->SetBranchAddress("ShowerPosY5x5", &ShowerY);
 
+    // determine electron beam energy
+    double energy;
+    TH1F *energy_test = new TH1F("energy", "energy", 1000, 0, 10000);
+    double maxenergy = 0, maxheight = 0;
+    for (int i = 0; i < TrECAL->GetEntries(); i++)
+    {
+        TrECAL->GetEntry(i);
+        for (size_t j = 0; j < Energy_5x5->size(); j++)
+        {
+            energy_test->Fill(Energy_5x5->at(j));
+            if ((Energy_5x5->at(j) > maxenergy) && (energy_test->GetBinContent(static_cast<int>(Energy_5x5->at(j) / energy_test->GetBinWidth(0))) > 50))
+                maxenergy = Energy_5x5->at(j);
+        }
+    }
+    int startbin = 0, maxbin = 0;
+    startbin = maxenergy / 2 / 10;
+    for (int i = startbin; i < energy_test->GetNbinsX(); i++)
+    {
+        if (energy_test->GetBinContent(i) > maxheight)
+        {
+            maxheight = energy_test->GetBinContent(i);
+            maxbin = i;
+        }
+    }
+    energy = std::round(maxbin * energy_test->GetBinWidth(0) / 100) * 100;
+    double energy_cut = energy / 5;
+
     TH1D *hisx = new TH1D("his1", "posx", 100, -40, 40);
     TH1D *hisy = new TH1D("his2", "posy", 100, -40, 40);
     TH2D *hisecal = new TH2D("his3", "posecal", 40, -40, 40, 40, -40, 40);
@@ -182,7 +236,7 @@ void DrawPosition(TString path)
     {
         TrECAL->GetEntry(i);
         TrTrack->GetEntry(i);
-        if (!(ShowerX->size() == 1 && Energy_5x5->at(0) > 200 && triggerID == trackID && SeedID->at(0) == 326034 && (trackPos[0] != 0 || trackPos[1] != 0) && (sqrt(Power(trackVec[1], 2) + Power(trackVec[0], 2)) < 0.002)))
+        if (!(ShowerX->size() == 1 && Energy_5x5->at(0) > energy_cut && triggerID == trackID && SeedID->at(0) == 326034 && (trackPos[0] != 0 || trackPos[1] != 0) && (sqrt(Power(trackVec[1], 2) + Power(trackVec[0], 2)) < 0.002)))
             continue;
         if (!(fabs(ShowerX->at(0)) < 1.5 && fabs(ShowerY->at(0)) < 1.5))
             continue;

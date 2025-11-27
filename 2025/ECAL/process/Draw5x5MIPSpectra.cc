@@ -176,8 +176,8 @@ void Draw5x5MIPSpectra(TString rootname)
         for (int j = 0; j < 5; j++)
         {
             tr->SetBranchAddress(Form("Hit_%d_%d", i + 1, j + 1), &hit[5 * i + j]);
-            // HGMip_his[5 * i + j] = new TH1F(Form("MIPSpectrum_%d_%d", i + 1, j + 1), Form("his%d;ADC value;counts", 5 * i + j), 200, 6000, 16000);
             HGMip_his[5 * i + j] = new TH1F(Form("MIPSpectrum_%d_%d", i + 1, j + 1), Form("his%d;ADC value;counts", 5 * i + j), 200, 4000, 14000);
+            // HGMip_his[5 * i + j] = new TH1F(Form("MIPSpectrum_%d_%d", i + 1, j + 1), Form("his%d;ADC value;counts", 5 * i + j), 200, 500, 1500);
         }
     double energycut = 2000, peak, temp;
     int channel, chcount, process;
@@ -197,6 +197,7 @@ void Draw5x5MIPSpectra(TString rootname)
             for (int j = 0; j < 5; j++)
             {
                 int ch = 5 * i + j;
+                // temp = hit[ch].LowGainPeak - hit[ch].LowGainPedestal;
                 temp = hit[ch].HighGainPeak - hit[ch].HighGainPedestal;
                 if (temp > energycut)
                 {
@@ -210,7 +211,8 @@ void Draw5x5MIPSpectra(TString rootname)
             continue;
         else
         {
-            HGMip_his[channel]->Fill(peak);
+            if (peak > HGMip_his[channel]->GetBinCenter(0) && peak < HGMip_his[channel]->GetBinCenter(HGMip_his[channel]->GetNbinsX()))
+                HGMip_his[channel]->Fill(peak);
         }
     }
     std::cout << std::endl;
@@ -218,19 +220,19 @@ void Draw5x5MIPSpectra(TString rootname)
     double MPV[25], Peak[25];
     TCanvas *can = new TCanvas("cMipSpectra", "canvas", 1600, 900);
     can->Divide(5, 5);
-    // double par[4] = {472.06952, 10084.445, 908683.31, 100.00000};
-    double par[4] = {472.06952, 8084.445, 908683.31, 100.00000};
+    double par[4] = {1000, 800, 10000, 10};
     for (int i = 0; i < 5; i++)
         for (int j = 0; j < 5; j++)
         {
             can->cd(21 + i - 5 * j);
             HGMip_his[5 * i + j]->Draw();
-            TF1 *ff = new TF1("lan_gaus_conv", langaufun, HGMip_his[5 * i + j]->GetMaximumBin() * HGMip_his[5 * i + j]->GetBinWidth(0) - 1500, HGMip_his[5 * i + j]->GetMaximumBin() * HGMip_his[5 * i + j]->GetBinWidth(0) + 3000, 4);
+            TF1 *ff = new TF1("lan_gaus_conv", langaufun, HGMip_his[5 * i + j]->GetMaximumBin() * HGMip_his[5 * i + j]->GetBinWidth(0) + HGMip_his[5 * i + j]->GetBinLowEdge(1) - 1000, HGMip_his[5 * i + j]->GetMaximumBin() * HGMip_his[5 * i + j]->GetBinWidth(0) + HGMip_his[5 * i + j]->GetBinLowEdge(1) + 4000, 4);
+            par[1] = HGMip_his[5 * i + j]->GetMaximumBin() * HGMip_his[5 * i + j]->GetBinWidth(0) + HGMip_his[5 * i + j]->GetBinLowEdge(1);
             ff->SetParameters(par);
-            HGMip_his[5 * i + j]->Fit(ff, "Q");
+            HGMip_his[5 * i + j]->Fit(ff, "QR");
             // langaufit(HGMip_his[5 * i + j]);
             if (HGMip_his[5 * i + j]->GetFunction("lan_gaus_conv"))
-                MPV[5 * i + j] = HGMip_his[5 * i + j]->GetFunction("lan_gaus_conv")->GetParameter(1);
+                MPV[5 * i + j] = HGMip_his[5 * i + j]->GetFunction("lan_gaus_conv")->GetMaximumX();
             Peak[5 * i + j] = HGMip_his[5 * i + j]->GetMaximumBin() * HGMip_his[5 * i + j]->GetBinWidth(0) + HGMip_his[5 * i + j]->GetBinLowEdge(1);
             HGMip_his[5 * i + j]->GetXaxis()->SetRangeUser(Peak[5 * i + j] - 2 * HGMip_his[5 * i + j]->GetRMS(), Peak[5 * i + j] + 5 * HGMip_his[5 * i + j]->GetRMS());
             HGMip_his[5 * i + j]->GetYaxis()->SetRangeUser(0, HGMip_his[5 * i + j]->GetMaximum() * 1.2);
