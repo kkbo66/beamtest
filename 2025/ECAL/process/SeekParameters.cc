@@ -19,9 +19,9 @@ using namespace TMath;
 
 Double_t ff(double *x, double *par)
 {
-    Double_t val = par[0] * exp(-(x[0] - par[1]) / par[2]) + par[3] * exp(-(x[0] - par[1]) / par[4]) + par[5] * exp(-(x[0] - par[1]) / par[6]) + par[7] * exp(-(x[0] - par[1]) / par[8]) + par[9] * exp(-(x[0] - par[1]) / par[10]);
+    Double_t val = par[0] * exp(-(x[0] - par[1]) / par[2]) + par[3] * exp(-(x[0] - par[1]) / par[4]) + par[5] * exp(-(x[0] - par[1]) / par[6]) + par[7] * exp(-(x[0] - par[1]) / par[8]);
 
-    if (x[0] >= par[1] && x[0] <= 2000)
+    if (x[0] >= par[1] && x[0] <= 3000)
         return val * Power((x[0] - par[1]), 2);
     else
         return 0;
@@ -106,11 +106,11 @@ void seek_parameters(vector<TString> rootfiles)
         }
     }
     // 拟合函数为5个指数乘上幂函数的形式，拟合所有高低增益通道
-    double HGpars[25][11], LGpars[25][11];
-    double HGInitpars[11] = {2.40185, 520.663, 49.1514, -4.54368, 44.1523, 7.10989, 53.7494, 0.00832854, 400.761, -4.97743, 49.5134};
-    double LGInitpars[11] = {2.26025, 521.106, 54.1251, -0.639271, 39.6453, 2.2916, 50.2358, 0.000925089, 369.821, -3.91322, 52.6975};
-    TF1 *fun_HG = new TF1("funHG", ff, 0, 3000, 11);
-    TF1 *fun_LG = new TF1("funLG", ff, 0, 3000, 11);
+    double HGpars[25][9], LGpars[25][9];
+    double HGInitpars[9] = {2.40185, 520.663, 49.1514, -4.54368, 44.1523, 7.10989, 53.7494, -4.97743, 49.5134};
+    double LGInitpars[9] = {2.26025, 521.106, 54.1251, -0.639271, 39.6453, 2.2916, 50.2358, -3.91322, 52.6975};
+    TF1 *fun_HG = new TF1("funHG", ff, 0, 3000, 9);
+    TF1 *fun_LG = new TF1("funLG", ff, 0, 3000, 9);
     TGraph *gr_HG = new TGraph(256);
     gr_HG->SetMarkerStyle(8);
     gr_HG->SetMarkerSize(0.5);
@@ -121,6 +121,7 @@ void seek_parameters(vector<TString> rootfiles)
     can_HG->Divide(5, 5);
     TCanvas *can_LG = new TCanvas("canLG", "canLG", 1600, 900);
     can_LG->Divide(5, 5);
+    TFile *outputfile = new TFile("average_waveform.root", "RECREATE");
     for (int i = 0; i < 25; i++)
     {
         fun_HG->SetParameters(HGInitpars);
@@ -130,6 +131,10 @@ void seek_parameters(vector<TString> rootfiles)
             gr_HG->SetPoint(j, 12.5 * j, HGamp[i][j]);
             gr_LG->SetPoint(j, 12.5 * j, LGamp[i][j]);
         }
+        gr_HG->SetName(Form("HGch%d", i));
+        gr_LG->SetName(Form("LGch%d", i));
+        gr_HG->Write();
+        gr_LG->Write();
         for (int j = 0; j < 10; j++)
         {
             gr_HG->Fit(fun_HG, "R", "", (HGpeakpos[i] - 12) * 12.5, (HGpeakpos[i] + 30) * 12.5);
@@ -141,12 +146,13 @@ void seek_parameters(vector<TString> rootfiles)
         gr_HG->DrawClone("ap");
         can_LG->cd(i / 5 + (4 - i % 5) * 5 + 1);
         gr_LG->DrawClone("ap");
-        for (int j = 0; j < 11; j++)
+        for (int j = 0; j < 9; j++)
         {
             HGpars[i][j] = fun_HG->GetParameter(j);
             LGpars[i][j] = fun_LG->GetParameter(j);
         }
     }
+    outputfile->Close();
     can_HG->SaveAs("HG_fun_fit.png");
     can_LG->SaveAs("LG_fun_fit.png");
     // 将拟合参数保存到参数文件
@@ -157,12 +163,12 @@ void seek_parameters(vector<TString> rootfiles)
     }
     for (int i = 0; i < 25; i++)
     {
-        for (int j = 0; j < 11; j++)
+        for (int j = 0; j < 9; j++)
         {
             outfile << left << setw(15) << LGpars[i][j] << '\t';
         }
         outfile << '\n';
-        for (int j = 0; j < 11; j++)
+        for (int j = 0; j < 9; j++)
         {
             outfile << left << setw(15) << HGpars[i][j] << '\t';
         }
