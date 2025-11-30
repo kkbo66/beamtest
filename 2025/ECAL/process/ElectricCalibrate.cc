@@ -311,6 +311,8 @@ int main(int argc, char *argv[])
         // 2025
         grHG[i]->Fit("pol1", "QR", "", 0, 1000);
         grHG[i]->Draw("ap");
+        grHG[i]->GetYaxis()->SetRangeUser(0,18000);
+        grHG[i]->GetXaxis()->SetRangeUser(0, 1200);
         gPad->Modified();
         gPad->Update();
         pave = (TPaveStats *)grHG[i]->FindObject("stats");

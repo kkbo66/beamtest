@@ -173,7 +173,7 @@ int main(int argc, char const *argv[])
       int LGMaxID = 0;
       double LGMaxAmp = 0;
 
-      int Pstart = 65, Pstop = 95;
+      int Pstart = 140, Pstop = 170;
       if (TimeDelay)
       {
         Pstart += 35;

@@ -200,9 +200,13 @@ void Draw5x5NoiseTempGratio(TString rootname)
       gPad->Update();
     }
   }
-  cHNoise->SaveAs("./HGnoise.pdf");
+  // cHNoise->SaveAs("./HGnoise.pdf");
   TCanvas *cHNoisedis = new TCanvas("cHNoisedis", "High Gain Noise", 1600, 900);
+  gPad->SetGrid(0, 0);
   his_HGnoise->Draw("colz");
+  for (int i = 0; i < 5; i++)
+    for (int j = 0; j < 5; j++)
+      tex->DrawLatexNDC(0.15 * (i + 1) + 0.08, 0.17 * (j + 1), Form("%.2lf", HGnoise[5 * i + j]));
   cHNoisedis->SaveAs("./HGnoisedis.pdf");
 
   TCanvas *cHLratio = new TCanvas("HLGainRatio", "Gain ratio", 1600, 900);
