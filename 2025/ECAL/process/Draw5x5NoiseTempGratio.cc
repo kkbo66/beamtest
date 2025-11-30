@@ -144,6 +144,8 @@ void Draw5x5NoiseTempGratio(TString rootname)
     }
   }
 
+  TH2F *his_LGnoise = new TH2F("hisLGnoise", ";row;column;sigma", 5, 0, 5, 5, 0, 5);
+  his_LGnoise->SetDirectory(nullptr);
   TCanvas *cLNoise = new TCanvas("cLNoise", "Low Gain Noise", 1600, 900);
   cLNoise->Divide(5, 5);
   for (Int_t i = 0; i < 5; i++)
@@ -156,6 +158,7 @@ void Draw5x5NoiseTempGratio(TString rootname)
       hLNoise[i][j]->Fit("gaus", "Q");
       LGpedestal[5 * i + j] = hLNoise[i][j]->GetFunction("gaus")->GetParameter(1);
       LGnoise[5 * i + j] = hLNoise[i][j]->GetFunction("gaus")->GetParameter(2);
+      his_LGnoise->Fill(i, j, hLNoise[i][j]->GetFunction("gaus")->GetParameter(2));
       gPad->Update();
       tex->DrawLatexNDC(0.5, 0.5, Form("Mean=%.2lf", LGpedestal[5 * i + j]));
       tex->DrawLatexNDC(0.5, 0.35, Form("Sigma=%.2lf", LGnoise[5 * i + j]));
@@ -171,6 +174,14 @@ void Draw5x5NoiseTempGratio(TString rootname)
       gPad->Update();
     }
   }
+  TCanvas *cLNoisedis = new TCanvas("cLNoisedis", "Low Gain Noise", 1600, 900);
+  gPad->SetGrid(0, 0);
+  his_LGnoise->Draw("colz");
+  for (int i = 0; i < 5; i++)
+    for (int j = 0; j < 5; j++)
+      tex->DrawLatexNDC(0.15 * (i + 1) + 0.08, 0.16 * (j + 1), Form("%.2lf", LGnoise[5 * i + j]));
+  cLNoisedis->SaveAs("./LGnoisedis.pdf");
+
   TH2F *his_HGnoise = new TH2F("hisHGnoise", ";row;column;sigma", 5, 0, 5, 5, 0, 5);
   his_HGnoise->SetDirectory(nullptr);
   TCanvas *cHNoise = new TCanvas("cHNoise", "High Gain Noise", 1600, 900);
@@ -206,7 +217,7 @@ void Draw5x5NoiseTempGratio(TString rootname)
   his_HGnoise->Draw("colz");
   for (int i = 0; i < 5; i++)
     for (int j = 0; j < 5; j++)
-      tex->DrawLatexNDC(0.15 * (i + 1) + 0.08, 0.17 * (j + 1), Form("%.2lf", HGnoise[5 * i + j]));
+      tex->DrawLatexNDC(0.15 * (i + 1) + 0.08, 0.16 * (j + 1), Form("%.2lf", HGnoise[5 * i + j]));
   cHNoisedis->SaveAs("./HGnoisedis.pdf");
 
   TCanvas *cHLratio = new TCanvas("HLGainRatio", "Gain ratio", 1600, 900);
