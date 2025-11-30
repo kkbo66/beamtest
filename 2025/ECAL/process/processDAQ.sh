@@ -70,16 +70,13 @@ if [ ! -f "rec.root" ]; then
   echo "generate $(pwd)/rec.root"
 fi
 
-# 画出重建电子能量和位置分布
-if [ -z $ENERGYCUT ]; then
-  ENERGYCUT=1000
-fi
-${SCRIPT_DIR}/DrawPosEnergy rec.root $ENERGYCUT
+# echo "fit electron energy spectrum"
+# ${SCRIPT_DIR}/DrawEnergy rec.root
 
-# 拟合MIP峰位
-# ${SCRIPT_DIR}/FitMip raw.root
+# echo "fit electron position distribution"
+# ${SCRIPT_DIR}/DrawPosition rec.root Tracker-step4-rec.root
 
-# Draw graphs
-# ${SCRIPT_DIR}/DrawValue raw.root
+# echo "print working state information"
+# ${SCRIPT_DIR}/Draw5x5NoiseTempGratio decode.root
 
 popd >/dev/null

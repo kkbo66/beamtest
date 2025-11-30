@@ -191,7 +191,7 @@ void parameter_get(TString filename, double mean[50], double mean_error[50])
     infile->Close();
 }
 // Retrieve calibration parameter from calibration (0-24 LG)
-void calipars_get(TString filename, double calpar[25])
+void calipars_get(TString filename, double calpar[50])
 {
     TFile *infile = new TFile(filename.Data(), "READ");
     TGraphErrors *gr;
@@ -202,6 +202,9 @@ void calipars_get(TString filename, double calpar[25])
             gr = (TGraphErrors *)infile->Get(Form("Hit_%d_%d_LGCal", i, j));
             fun = gr->GetFunction("pol1");
             calpar[hit2ch(i, j)] = fun->GetParameter(1);
+            gr = (TGraphErrors *)infile->Get(Form("Hit_%d_%d_HGCal", i, j));
+            fun = gr->GetFunction("pol1");
+            calpar[hit2ch(i, j) + 25] = fun->GetParameter(1);
         }
     infile->Close();
 }
@@ -255,6 +258,8 @@ int main(int argc, char *argv[])
             grLG[5 * i + j] = new TGraphErrors(chargelist.size());
             grHG[5 * i + j]->SetNameTitle(Form("Hit_%d_%d_HGCal", i + 1, j + 1), Form("Hit_%d_%d_HGCal;charge[fc];ADCvalue", i + 1, j + 1));
             grLG[5 * i + j]->SetNameTitle(Form("Hit_%d_%d_LGCal", i + 1, j + 1), Form("Hit_%d_%d_LGCal;charge[fc];ADCvalue", i + 1, j + 1));
+            grHG[5 * i + j]->SetMarkerStyle(8);
+            grHG[5 * i + j]->SetMarkerSize(0.7);
             grLG[5 * i + j]->SetMarkerStyle(8);
             grLG[5 * i + j]->SetMarkerSize(0.7);
         }
@@ -286,7 +291,7 @@ int main(int argc, char *argv[])
     {
         canLG->cd(ch2can(i));
         grLG[i]->Fit("pol1", "QR", "", grLG[i]->GetXaxis()->GetXmin(), grLG[i]->GetXaxis()->GetXmax());
-        grLG[i]->Draw("ape");
+        grLG[i]->Draw("ap");
         gPad->Modified();
         gPad->Update();
         pave = (TPaveStats *)grLG[i]->FindObject("stats");
@@ -300,8 +305,12 @@ int main(int argc, char *argv[])
         gPad->Update();
 
         canHG->cd(ch2can(i));
-        grHG[i]->Fit("pol1", "QR", "", grHG[i]->GetXaxis()->GetXmin(), grHG[i]->GetXaxis()->GetXmax());
-        grHG[i]->Draw("ape");
+        // grHG[i]->Fit("pol1", "QR", "", grHG[i]->GetXaxis()->GetXmin(), grHG[i]->GetXaxis()->GetXmax());
+        // 2024
+        // grHG[i]->Fit("pol1", "QR", "", 0, 500);
+        // 2025
+        grHG[i]->Fit("pol1", "QR", "", 0, 1000);
+        grHG[i]->Draw("ap");
         gPad->Modified();
         gPad->Update();
         pave = (TPaveStats *)grHG[i]->FindObject("stats");
@@ -324,9 +333,13 @@ int main(int argc, char *argv[])
         grHG[i]->Write();
     }
     outfile->Close();
-    double elecCal[25];
+    double elecCal[50];
     calipars_get("calibration.root", elecCal);
+    std::cout << "LG electric factor: " << std::endl;
     for (int i = 0; i < 25; i++)
+        std::cout << elecCal[i] << std::endl;
+    std::cout << "HG electric factor: " << std::endl;
+    for (int i = 25; i < 50; i++)
         std::cout << elecCal[i] << std::endl;
     return 0;
 }

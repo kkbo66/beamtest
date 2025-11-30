@@ -8,6 +8,7 @@
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TCanvas.h>
 #include <TGraph.h>
 #include <TStyle.h>
@@ -116,7 +117,7 @@ void Draw5x5NoiseTempGratio(TString rootname)
       }
   }
   std::cout << std::endl;
-  
+
   TCanvas *cTemp1 = new TCanvas("cTemp1", "Temperature1", 1600, 900);
   cTemp1->Divide(5, 5);
   for (Int_t i = 0; i < 5; i++)
@@ -170,6 +171,8 @@ void Draw5x5NoiseTempGratio(TString rootname)
       gPad->Update();
     }
   }
+  TH2F *his_HGnoise = new TH2F("hisHGnoise", ";row;column;sigma", 5, 0, 5, 5, 0, 5);
+  his_HGnoise->SetDirectory(nullptr);
   TCanvas *cHNoise = new TCanvas("cHNoise", "High Gain Noise", 1600, 900);
   cHNoise->Divide(5, 5);
   for (Int_t i = 0; i < 5; i++)
@@ -182,6 +185,7 @@ void Draw5x5NoiseTempGratio(TString rootname)
       hHNoise[i][j]->Fit("gaus", "Q");
       HGpedestal[5 * i + j] = hHNoise[i][j]->GetFunction("gaus")->GetParameter(1);
       HGnoise[5 * i + j] = hHNoise[i][j]->GetFunction("gaus")->GetParameter(2);
+      his_HGnoise->Fill(i, j, hHNoise[i][j]->GetFunction("gaus")->GetParameter(2));
       tex->DrawLatexNDC(0.5, 0.5, Form("Mean=%.2lf", HGpedestal[5 * i + j]));
       tex->DrawLatexNDC(0.5, 0.35, Form("Sigma=%.2lf", HGnoise[5 * i + j]));
       TPaveStats *ptstats = (TPaveStats *)hHNoise[i][j]->GetListOfFunctions()->FindObject("stats");
@@ -196,7 +200,10 @@ void Draw5x5NoiseTempGratio(TString rootname)
       gPad->Update();
     }
   }
-  // cHNoise->SaveAs("./HGnoise.pdf");
+  cHNoise->SaveAs("./HGnoise.pdf");
+  TCanvas *cHNoisedis = new TCanvas("cHNoisedis", "High Gain Noise", 1600, 900);
+  his_HGnoise->Draw("colz");
+  cHNoisedis->SaveAs("./HGnoisedis.pdf");
 
   TCanvas *cHLratio = new TCanvas("HLGainRatio", "Gain ratio", 1600, 900);
   cHLratio->Divide(5, 5);
