@@ -178,12 +178,12 @@ Parameter::Parameter()
   {
     if (i % 2 == 0)
     {
-      for (int j = 0; j < 11; j++)
+      for (int j = 0; j < 9; j++)
         in7 >> m_LGWfPara[i / 2][j];
     }
     else
     {
-      for (int j = 0; j < 11; j++)
+      for (int j = 0; j < 9; j++)
         in7 >> m_HGWfPara[i / 2][j];
     }
   }
