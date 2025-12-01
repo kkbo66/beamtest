@@ -174,6 +174,7 @@ int main(int argc, char const *argv[])
       double LGMaxAmp = 0;
 
       int Pstart = 140, Pstop = 170;
+      // int Pstart = 65, Pstop = 95;
       if (TimeDelay)
       {
         Pstart += 35;
@@ -214,17 +215,17 @@ int main(int argc, char const *argv[])
       }
 
       double time, amp, pedestal, chi2;
-      if (triggerID == 0)
-      {
-        for (int j = 0; j < 9; j++)
-          f1->SetParameter(j, Para.HGWfPara(k, j));
-        f1->Draw();
-        gPad->SaveAs(Form("fitfunctionHG_%d.png", k));
-        for (int j = 0; j < 9; j++)
-          f1->SetParameter(j, Para.LGWfPara(k, j));
-        f1->Draw();
-        gPad->SaveAs(Form("fitfunctionLG_%d.png", k));
-      }
+      // if (triggerID == 0)
+      // {
+      //   for (int j = 0; j < 9; j++)
+      //     f1->SetParameter(j, Para.HGWfPara(k, j));
+      //   f1->Draw();
+      //   gPad->SaveAs(Form("fitfunctionHG_%d.png", k));
+      //   for (int j = 0; j < 9; j++)
+      //     f1->SetParameter(j, Para.LGWfPara(k, j));
+      //   f1->Draw();
+      //   gPad->SaveAs(Form("fitfunctionLG_%d.png", k));
+      // }
       if (Hit[k]->HighGainPeak > (Para.HGPedestal(k) + 6 * Para.HGNoise(k)) && Hit[k]->HighGainPeak < 16000 && IsOsc == false)
       {
         for (int j = 0; j < 9; j++)
